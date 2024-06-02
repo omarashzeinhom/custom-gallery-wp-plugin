@@ -1,5 +1,3 @@
 <?php
-/**
- * Plugin Name : Custom Gallery Plugin
- * Author : ANDGOEDU
- */
+// Silence is Golden
+?>
