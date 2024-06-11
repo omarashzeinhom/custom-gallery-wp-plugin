@@ -25,6 +25,10 @@ function register_gallery_post()
         'menu_icon' => 'dashicons-format-gallery'
     ]);
 }
+/**
+ * do_action( ‘init’ )
+ * @link: https://developer.wordpress.org/reference/hooks/init/
+ */
 add_action('init', 'register_gallery_post');
 
 
@@ -36,7 +40,11 @@ function activate_custom_gallery_plugin()
     // Clear the permalinks after the post type has been registered.
     flush_rewrite_rules();
 }
-
+/** 
+ * 
+* register_activation_hook( string $file, callable $callback )
+* @link: https://developer.wordpress.org/reference/functions/register_activation_hook/ 
+*/
 register_activation_hook(__FILE__, 'activate_custom_gallery_plugin');
 
 
@@ -51,3 +59,15 @@ function deactivate_custom_gallery_plugin()
 }
 
 register_deactivation_hook(__FILE__, 'activate_custom_gallery_plugin');
+
+
+
+
+/** Determining Plugin and Content Directories 
+*  @link: https://developer.wordpress.org/plugins/plugin-basics/determining-plugin-and-content-directories/#themes
+*/
+
+
+// DEBUG CODE
+// var_dump(wp_upload_dir());
+// This Can Be Removed or tested with any of the above 
