@@ -71,3 +71,19 @@ register_deactivation_hook(__FILE__, 'activate_custom_gallery_plugin');
 // DEBUG CODE
 // var_dump(wp_upload_dir());
 // This Can Be Removed or tested with any of the above 
+
+
+function custom_gallery_plugin_uninstall(){
+    $gallery_images = get_posts(array(
+        'post_type' => 'galleryimage',
+        'numberpost' => -1,
+        'post_status' => 'any'
+    ));
+    
+
+    foreach($gallery_images as $gallery_image){
+        wp_delete_post($gallery_image-> ID, true);
+    }
+}
+
+register_uninstall_hook(__FILE__,'custom_gallery_plugin_uninstall');
