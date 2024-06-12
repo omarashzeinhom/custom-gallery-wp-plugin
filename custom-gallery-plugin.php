@@ -87,3 +87,13 @@ function custom_gallery_plugin_uninstall(){
 }
 
 register_uninstall_hook(__FILE__,'custom_gallery_plugin_uninstall');
+
+
+
+/** Checking User Capabilities
+* @link: https://developer.wordpress.org/plugins/security/checking-user-capabilities/
+*/
+
+/** 
+* 1. Make Sure Edit, Post, and Delete are Only available to admins, & editor.
+*/
