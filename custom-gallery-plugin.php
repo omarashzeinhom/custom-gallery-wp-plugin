@@ -90,7 +90,8 @@ register_uninstall_hook(__FILE__,'custom_gallery_plugin_uninstall');
 
 
 
-/** Checking User Capabilities
+/** TODO
+* Checking User Capabilities
 * @link: https://developer.wordpress.org/plugins/security/checking-user-capabilities/
 */
 
