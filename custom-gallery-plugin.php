@@ -94,6 +94,8 @@ function custom_gallery_plugin_uninstall(){
     foreach($gallery_images as $gallery_image){
         wp_delete_post($gallery_image-> ID, true);
     }
+    // Remove Plugin Roles
+    remove_role('marketing_team');
 }
 
 register_uninstall_hook(__FILE__,'custom_gallery_plugin_uninstall');
@@ -143,6 +145,8 @@ register_uninstall_hook(__FILE__,'custom_gallery_plugin_uninstall');
 * - Here are four roles a user can have with regards to plugins. 
 * - All can be managed from the advanced view section of a plugin page
 * @link: https://developer.wordpress.org/plugins/wordpress-org/special-user-roles-capabilities/
+* @link : https://developer.wordpress.org/reference/classes/wp_role/add_cap/
+* - Unregister User and Role When Uninstalling Plugin
 */
 
 /** 
