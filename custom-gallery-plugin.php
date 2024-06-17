@@ -146,11 +146,21 @@ register_uninstall_hook(__FILE__,'custom_gallery_plugin_uninstall');
 */
 
 /** 
-* 1. Make Sure Edit, Post, and Delete are Only available to admins, & editor.
+* 1. ADD User Role for Gallery - Photographers or Marketing Team.
 */
 
-
-
+function add_marketing_team_role(){
+    add_role(
+        'marketing_team',
+        'Marketing Team',
+        array (
+            'read' => true, 
+            'edit_post' => true,
+            'upload_files'=> true
+        )
+        );
+}
+add_action('init', 'add_marketing_team_role');
 
 
 
