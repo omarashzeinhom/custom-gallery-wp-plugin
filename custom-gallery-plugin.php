@@ -27,7 +27,7 @@ Author: Omar Ashraf Zeinhom - ANDGOEDU
  *
  */
 
- function register_gallery_post() {
+function register_gallery_post() {
     register_post_type('galleryimage', [
         'public' => true,
         'label' => 'Gallery',
@@ -53,7 +53,6 @@ Author: Omar Ashraf Zeinhom - ANDGOEDU
     ]);
 }
 add_action('init', 'register_gallery_post');
-
 
 
 function activate_custom_gallery_plugin() {
@@ -261,6 +260,58 @@ function custom_gallery_plugin_menu() {
     }
 }
 add_action('admin_menu', 'custom_gallery_plugin_menu');
+
+function handle_custom_gallery_upload() {
+    // Check if a file is uploaded
+    if (!empty($_FILES['gallery_image']) && !empty($_POST['image_title'])) {
+        $file = $_FILES['gallery_image'];
+        $title = sanitize_text_field($_POST['image_title']);
+
+        // Verify the file type
+        $file_type = wp_check_filetype($file['name']);
+        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+        if (in_array($file_type['type'], $allowed_types)) {
+            // Upload the file
+            $uploaded = wp_handle_upload($file, ['test_form' => false]);
+
+            if (isset($uploaded['file'])) {
+                $file_path = $uploaded['file'];
+                $file_url = $uploaded['url'];
+
+                // Create a new post in 'galleryimage' post type
+                $post_id = wp_insert_post([
+                    'post_title' => $title,
+                    'post_type' => 'galleryimage',
+                    'post_status' => 'publish'
+                ]);
+
+                // Attach the uploaded image to the post
+                if ($post_id) {
+                    $attachment_id = wp_insert_attachment([
+                        'guid' => $file_url,
+                        'post_mime_type' => $file_type['type'],
+                        'post_title' => $title,
+                        'post_content' => '',
+                        'post_status' => 'inherit'
+                    ], $file_path, $post_id);
+
+                    // Generate the metadata for the attachment, and update the database record
+                    require_once(ABSPATH . 'wp-admin/includes/image.php');
+                    $attach_data = wp_generate_attachment_metadata($attachment_id, $file_path);
+                    wp_update_attachment_metadata($attachment_id, $attach_data);
+
+                    // Set the attachment as the post thumbnail
+                    set_post_thumbnail($post_id, $attachment_id);
+                }
+            }
+        }
+    }
+    // Redirect back to the plugin page
+    wp_redirect(admin_url('admin.php?page=custom-gallery-plugin'));
+    exit;
+}
+add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
 
 function custom_gallery_plugin_page() {
     // Fetch gallery images
