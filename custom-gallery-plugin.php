@@ -181,9 +181,11 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
  **/
 
  function add_marketing_team_role() {
+  
     add_role(
         'marketing_team',
         'Marketing Team',
+   
     );
 }
 add_action('init', 'add_marketing_team_role');
@@ -192,23 +194,24 @@ function add_marketing_team_capabilities() {
     $role = get_role('marketing_team');
     if ($role) {
         $capabilities = [
-            'edit_galleryimage',
-            'read_galleryimage',
-            'delete_galleryimage',
-            'edit_galleryimages',
-            'edit_others_galleryimages',
-            'publish_galleryimages',
-            'read_private_galleryimages',
-            'delete_galleryimages',
-            'delete_private_galleryimages',
-            'delete_published_galleryimages',
-            'delete_others_galleryimages',
-            'edit_private_galleryimages',
-            'edit_published_galleryimages'
+            'edit_galleryimage'  => true,
+            'read_galleryimage'  => true,
+            'delete_galleryimage'  => true,
+            'edit_galleryimages'  => true,
+            'edit_others_galleryimages'  => true,
+            'publish_galleryimages'  => true,
+            'read_private_galleryimages'  => true,
+            'delete_galleryimages'  => true,
+            'delete_private_galleryimages'  => true,
+            'delete_published_galleryimages'  => true,
+            'delete_others_galleryimages'  => true,
+            'edit_private_galleryimages'  => true,
+            'edit_published_galleryimages'  => true,
+            'create_galleryimages' => true,
         ];
 
         foreach ($capabilities as $cap) {
-            $role->add_cap($cap);
+            $role->add_cap($cap, true);
         }
     }
 }
@@ -231,6 +234,7 @@ function add_admin_capabilities() {
             'delete_others_galleryimages',
             'edit_private_galleryimages',
             'edit_published_galleryimages'
+            
         ];
 
         foreach ($capabilities as $cap) {
@@ -274,14 +278,20 @@ function custom_gallery_plugin_page() {
     // Section to display existing gallery images
     echo '<h2>Existing Gallery Images</h2>';
     if (!empty($gallery_images)) {
-        echo '<div class="gallery-images">';
+        echo '<div class="gallery-images" style="display: flex; flex-wrap: wrap; gap: 20px;">';
         foreach ($gallery_images as $image) {
             $image_url = wp_get_attachment_url(get_post_thumbnail_id($image->ID)); // Get the featured image URL
-            echo '<div class="gallery-image">';
+            echo '<div class="gallery-image" style="text-align: center; width: 150px;">';
             if ($image_url) {
                 echo '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($image->post_title) . '" style="max-width: 150px; max-height: 150px;" />';
             }
             echo '<p>' . esc_html($image->post_title) . '</p>';
+
+            // Add edit and view links
+            echo '<p>';
+            echo '<a href="' . esc_url(get_edit_post_link($image->ID)) . '">Edit</a> | ';
+            echo '<a href="' . esc_url(get_permalink($image->ID)) . '" target="_blank">View</a>';
+            echo '</p>';
             echo '</div>';
         }
         echo '</div>';
