@@ -6,7 +6,17 @@ Version: 1.0
 Author: Omar Ashraf Zeinhom - ANDGOEDU
 */
 
-
+/*
+ *  ****************************************************************************************
+ *  .______        ___           _______. __    ______     _______.
+ *  |   _  \      /   \         /       ||  |  /      |   /       |
+ *  |  |_)  |    /  ^  \       |   (----`|  | |  ,----'  |   (----`
+ *  |   _  <    /  /_\  \       \   \    |  | |  |        \   \    
+ *  |  |_)  |  /  _____  \  .----)   |   |  | |  `----.----)   |   
+ *  |______/  /__/     \__\ |_______/    |__|  \______|_______/    
+ *
+ *  ****************************************************************************************
+ */
 
 
 /**
@@ -90,11 +100,91 @@ register_uninstall_hook(__FILE__,'custom_gallery_plugin_uninstall');
 
 
 
-/** TODO
+
+/**
+ * GNU Licenses 
+ * @link: https://www.gnu.org/licenses/license-list.html#OtherLicenses
+ * @link: https://opensource.org/licenses
+ */
+
+
+
+
+/*
+ *  ****************************************************************************************
+ *         _______. _______   ______  __    __  .______       __  .___________.____    ____ 
+ *        /       ||   ____| /      ||  |  |  | |   _  \     |  | |           |\   \  /   / 
+ *       |   (----`|  |__   |  ,----'|  |  |  | |  |_)  |    |  | `---|  |----` \   \/   /  
+ *       \   \    |   __|  |  |     |  |  |  | |      /     |  |     |  |       \_    _/   
+ *   .----)   |   |  |____ |  `----.|  `--'  | |  |\  \----.|  |     |  |         |  |     
+ *  |_______/    |_______| \______| \______/  | _| `._____||__|     |__|         |__| 
+ * 
+ *  ****************************************************************************************
+ */
+
+
+
+
+/** 
 * Checking User Capabilities
 * @link: https://developer.wordpress.org/plugins/security/checking-user-capabilities/
+* - Roles and Capabilities
+* Default Roles Are
+* 1. Super Admin
+* 2. Administrator
+* 3. Editor
+* 4. Author
+* 5. Contributor
+* 6. Subscriber
+* add_role( string $role, string $display_name, bool[] $capabilities = array() ): WP_Role|void
+* @link: https://developer.wordpress.org/reference/functions/add_role/
+* @link: https://wordpress.org/documentation/article/roles-and-capabilities/
+* @link https://developer.wordpress.org/plugins/users/roles-and-capabilities/
+* - Here are four roles a user can have with regards to plugins. 
+* - All can be managed from the advanced view section of a plugin page
+* @link: https://developer.wordpress.org/plugins/wordpress-org/special-user-roles-capabilities/
 */
 
 /** 
 * 1. Make Sure Edit, Post, and Delete are Only available to admins, & editor.
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/** Plugins Menus
+ * @link:  https://developer.wordpress.org/plugins/administration-menus/top-level-menus/
+ * Top Menu
+ * add_menu_page( string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, string $icon_url = ”, int|float $position = null ): string
+ * @link: https://developer.wordpress.org/reference/functions/add_menu_page/
+ * Sub Menu
+ * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/ 
+ * add_submenu_page( string $parent_slug, string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, int|float $position = null ): string|false
+ * @link: https://developer.wordpress.org/reference/functions/add_submenu_page/
+ *  PreDefined Sub Menus 
+ * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/#predefined-sub-menus
+ * @link: https://developer.wordpress.org/plugins/settings/
+ * @link: https://developer.wordpress.org/plugins/settings/settings-api/
+ * */
+
+
+
+
+
