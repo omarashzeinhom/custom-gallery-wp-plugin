@@ -30,7 +30,7 @@ function register_gallery_post() {
     $args = 
     [
         'public' => true,
-        'label' => 'Manage Galleries',
+        'label' => 'Gallery Image',
         'description'=> 'Manage your galleries here',
         'show_in_rest'=> true, // optional to be exposed in the REST API.
         'rest_base'=> 'gallery-image', // base slug for REST API
@@ -320,12 +320,12 @@ function custom_gallery_plugin_menu() {
     // Only allow users who can edit gallery images to access this menu
     if (current_user_can('edit_galleryimages')) {
         add_menu_page(
-            'Manage Gallery',
+            'Add New Gallery Image',
             'Gallery',
             'edit_galleryimages', // Capability required to access this menu
-            'custom-gallery-plugin',
-            'custom_gallery_plugin_page',
-            'dashicons-format-gallery',
+            'custom-gallery-plugin',    
+            'custom_gallery_plugin_page', // Custom Page
+            'dashicons-format-gallery', // Dash Icon
             6
         );
     }
@@ -441,7 +441,7 @@ function custom_gallery_plugin_page() {
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
     echo '<input type="hidden" name="action" value="custom_gallery_upload">';
     echo '<label for="gallery_image">Select Image:</label>';
-    echo '<input type="file" id="gallery_image" name="gallery_image" accept="image/*" required>';
+    echo '<input type="file" id="gallery_image" name="gallery_image" accept="image/*" required multiple>';
     echo '<br><br>';
     echo '<label for="image_title">Image Title:</label>';
     echo '<input type="text" id="image_title" name="image_title" required>';
@@ -460,8 +460,9 @@ function custom_gallery_plugin_styles() {
             gap: 20px;
         }
         .gallery-image {
+            width: 100%
             text-align: center;
-            width: 150px;
+            max-width: 150px;
             margin-bottom: 20px;
         }
         .gallery-image img {
@@ -471,6 +472,8 @@ function custom_gallery_plugin_styles() {
             opacity: 0.7;
             transition: 0.2s ease-in-out;
             box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem gray;
+            max-height: 75px;
+
         }
         .gallery-image img:hover {
             border: 1px solid #ccc;
@@ -501,8 +504,14 @@ add_action('admin_head', 'custom_gallery_plugin_styles');
 function check_current_user_capabilities() {
     $current_user = wp_get_current_user();
     echo '<pre>';
-    print_r($current_user->roles); // Print user roles
-    print_r($current_user->allcaps); // Print user capabilities
+    //print_r($current_user->roles); // Print user roles
+    //print_r($current_user->allcaps); // Print user capabilities
     echo '</pre>';
 }
 add_action('admin_notices', 'check_current_user_capabilities'); // This will display the roles and capabilities in the admin area.
+
+
+// 14. Make Carousel from Gallery Images Dynamically.
+// 15. Make Carousel Use Short Code to Display.
+// 16. Add Multiple Options for Carousels.
+// 17. Add JavaScript to Carousel.

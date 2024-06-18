@@ -62,3 +62,7 @@ node livereload.js
 - Activation / Deactivation Hooks
 
 1. [Activation / Deactivation Hooks - WordPress Plugin HandBook](https://developer.wordpress.org/plugins/plugin-basics/activation-deactivation-hooks/)
+
+- General References
+
+[HTML <input> multiple Attribute](https://www.w3schools.com/tags/att_input_multiple.asp)
