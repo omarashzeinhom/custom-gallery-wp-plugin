@@ -27,8 +27,18 @@ Author: Omar Ashraf Zeinhom - ANDGOEDU
  * */
 
 function register_gallery_post() {
-    register_post_type('galleryimage', [
+    $args = 
+    [
         'public' => true,
+        'label' => 'Manage Galleries',
+        'description'=> 'Manage your galleries here',
+        'show_in_rest'=> true, // optional to be exposed in the REST API.
+        'rest_base'=> 'gallery-image', // base slug for REST API
+        'menu_icon' => 'dashicons-format-gallery',
+        'has_archive'=> true,
+        'show_in_menu'=> true,
+        'supports'=> array('
+        title', 'editor', 'author', 'thumbnail', 'excerpt'), // supports
         'capability_type' => 'galleryimage',
         'map_meta_cap' => true, // Ensures custom capabilities are mapped correctly
         'capabilities' => [
@@ -47,7 +57,9 @@ function register_gallery_post() {
             'edit_published_posts' => 'edit_published_galleryimages',
             'create_posts' => 'create_galleryimages',
         ]
-    ]);
+        ];
+
+    register_post_type('galleryimage', $args );
 }
 add_action('init', 'register_gallery_post');
 
@@ -233,7 +245,7 @@ function add_marketing_team_capabilities() {
 }
 add_action('init', 'add_marketing_team_capabilities');
 
-// 9.1  add_admin_capabilities // Test this when uninstalled
+// 9.1  add_admin_capabilities
 function add_admin_capabilities() {
     $role = get_role('administrator');
     if ($role) {
@@ -286,7 +298,7 @@ function custom_gallery_plugin_menu() {
     if (current_user_can('edit_galleryimages')) {
         add_menu_page(
             'Custom Gallery Plugin',
-            'Gallery Plugin',
+            'Gallery',
             'edit_galleryimages', // Capability required to access this menu
             'custom-gallery-plugin',
             'custom_gallery_plugin_page',
@@ -413,7 +425,6 @@ function custom_gallery_plugin_page() {
     echo '<br><br>';
     echo '<input type="submit" class="button button-primary" value="Upload Image">';
     echo '</form>';
-
     echo '</div>';
 }
 
