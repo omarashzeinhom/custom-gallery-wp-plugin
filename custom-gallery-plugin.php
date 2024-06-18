@@ -29,8 +29,6 @@ Author: Omar Ashraf Zeinhom - ANDGOEDU
 function register_gallery_post() {
     register_post_type('galleryimage', [
         'public' => true,
-        'label' => 'Gallery',
-        'menu_icon' => 'dashicons-format-gallery',
         'capability_type' => 'galleryimage',
         'map_meta_cap' => true, // Ensures custom capabilities are mapped correctly
         'capabilities' => [
@@ -235,7 +233,7 @@ function add_marketing_team_capabilities() {
 }
 add_action('init', 'add_marketing_team_capabilities');
 
-// 9.1  add_admin_capabilities
+// 9.1  add_admin_capabilities // Test this when uninstalled
 function add_admin_capabilities() {
     $role = get_role('administrator');
     if ($role) {
@@ -429,16 +427,38 @@ function custom_gallery_plugin_styles() {
         }
         .gallery-image {
             text-align: center;
+            width: 150px;
+            margin-bottom: 20px;
         }
         .gallery-image img {
             border: 1px solid #ccc;
             padding: 5px;
             background: #f9f9f9;
+            opacity: 0.7;
+            transition: 0.2s ease-in-out;
+            box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem gray;
+        }
+        .gallery-image img:hover {
+            border: 1px solid #ccc;
+            padding: 5px;
+            background: #f9f9f9;
+            opacity: 1;
+            box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem black;
+        }
+        .gallery-image p {
+            margin: 5px 0;
+        }
+        .gallery-image a {
+            color: #0073aa;
+            text-decoration: none;
+        }
+        .gallery-image a:hover {
+            text-decoration: underline;
+            
         }
     </style>';
 }
 add_action('admin_head', 'custom_gallery_plugin_styles');
-
 
 
 
