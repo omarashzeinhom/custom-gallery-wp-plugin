@@ -202,6 +202,25 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
     add_role(
         'marketing_team',
         'Marketing Team',
+        array(
+           'read' => true,
+            'upload_files'=> true,
+            'edit_files' => true,
+            'edit_galleryimage'  => true,
+            'read_galleryimage'  => true,
+            'delete_galleryimage'  => true,
+            'edit_galleryimages'  => true,
+            'edit_others_galleryimages'  => true,
+            'publish_galleryimages'  => true,
+            'read_private_galleryimages'  => true,
+            'delete_galleryimages'  => true,
+            'delete_private_galleryimages'  => true,
+            'delete_published_galleryimages'  => true,
+            'delete_others_galleryimages'  => true,
+            'edit_private_galleryimages'  => true,
+            'edit_published_galleryimages'  => true,
+            'create_galleryimages' => true,
+        )
     );
 }
 add_action('init', 'add_marketing_team_role');
@@ -222,6 +241,10 @@ function add_marketing_team_capabilities() {
     $role = get_role('marketing_team');
     if ($role) {
         $capabilities = [
+            'unfiltered_upload'=> true,
+            'read' => true,
+            'upload_files'=> true,
+            'edit_files' => true,
             'edit_galleryimage'  => true,
             'read_galleryimage'  => true,
             'delete_galleryimage'  => true,
@@ -250,24 +273,24 @@ function add_admin_capabilities() {
     $role = get_role('administrator');
     if ($role) {
         $capabilities = [
-            'edit_galleryimage',
-            'read_galleryimage',
-            'delete_galleryimage',
-            'edit_galleryimages',
-            'edit_others_galleryimages',
-            'publish_galleryimages',
-            'read_private_galleryimages',
-            'delete_galleryimages',
-            'delete_private_galleryimages',
-            'delete_published_galleryimages',
-            'delete_others_galleryimages',
-            'edit_private_galleryimages',
-            'edit_published_galleryimages'
-            
+            'edit_galleryimage'  => true,
+            'read_galleryimage'  => true,
+            'delete_galleryimage'  => true,
+            'edit_galleryimages'  => true,
+            'edit_others_galleryimages'  => true,
+            'publish_galleryimages'  => true,
+            'read_private_galleryimages'  => true,
+            'delete_galleryimages'  => true,
+            'delete_private_galleryimages'  => true,
+            'delete_published_galleryimages'  => true,
+            'delete_others_galleryimages'  => true,
+            'edit_private_galleryimages'  => true,
+            'edit_published_galleryimages'  => true,
+            'create_galleryimages' => true,
         ];
 
         foreach ($capabilities as $cap) {
-            $role->add_cap($cap);
+            $role->add_cap($cap, true);
         }
     }
 }
@@ -297,7 +320,7 @@ function custom_gallery_plugin_menu() {
     // Only allow users who can edit gallery images to access this menu
     if (current_user_can('edit_galleryimages')) {
         add_menu_page(
-            'Custom Gallery Plugin',
+            'Manage Gallery',
             'Gallery',
             'edit_galleryimages', // Capability required to access this menu
             'custom-gallery-plugin',
