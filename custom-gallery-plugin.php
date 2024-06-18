@@ -142,12 +142,8 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
 
 
 /** 
- * 1. ADD User Role for Gallery - Photographers or Marketing Team.
- * Checking User Capabilities
- * @link: https://developer.wordpress.org/plugins/security/checking-user-capabilities/
+ * 1. Roles
  * 
- * - Roles and Capabilities
- * Default Roles Are
  * 1. Super Admin
  * 2. Administrator
  * 3. Editor
@@ -155,41 +151,32 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
  * 5. Contributor
  * 6. Subscriber
  * 
- * add_role( string $role, string $display_name, bool[] $capabilities = array() ): WP_Role|void
- * @link: https://developer.wordpress.org/reference/functions/add_role/
- * @link: https://wordpress.org/documentation/article/roles-and-capabilities/
- * @link https://developer.wordpress.org/plugins/users/roles-and-capabilities/
  * 
- * - All can be managed from the advanced view section of a plugin page
- * @link: https://developer.wordpress.org/plugins/wordpress-org/special-user-roles-capabilities/
- * @link : https://developer.wordpress.org/reference/classes/wp_role/add_cap/
+ * add_role                 @link: https://developer.wordpress.org/reference/functions/add_role/
+ * roles-and-capabilities   @link: https://wordpress.org/documentation/article/roles-and-capabilities/
+ * roles-and-capabilities   @link: https://developer.wordpress.org/plugins/users/roles-and-capabilities/
+ * remove_role()            @link:https://developer.wordpress.org/reference/functions/remove_role/
  * 
- * - Unregister User and Role When Uninstalling Plugin
- * remove_role( string $role )
- * @link:https://developer.wordpress.org/reference/functions/remove_role/
- * 
-
- *  
+ *   
  **/
 
  function add_marketing_team_role() {
-  
     add_role(
         'marketing_team',
         'Marketing Team',
-   
     );
 }
 add_action('init', 'add_marketing_team_role');
 
 /**
- * Capabilties
- * WP_Role::has_cap( string $cap ): bool
- * @link:  https://developer.wordpress.org/reference/classes/wp_role/has_cap/
- *  class WP_Role {}
- * @link: https://developer.wordpress.org/reference/classes/wp_role/
- *  
- * @link: https://developer.wordpress.org/apis/security/user-roles-and-capabilities/
+ * 2. Capabilties
+ *                               
+ *  Checking User Capabilities              @link: https://developer.wordpress.org/plugins/security/checking-user-capabilities/
+ *  WP_Role::has_cap( string $cap ): bool   @link:  https://developer.wordpress.org/reference/classes/wp_role/has_cap/
+ *  class WP_Role {}                        @link: https://developer.wordpress.org/reference/classes/wp_role/
+ *  user-roles-and-capabilities             @link: https://developer.wordpress.org/apis/security/user-roles-and-capabilities/
+ *  add_cap                                 @link: https://developer.wordpress.org/reference/classes/wp_role/add_cap/
+ *  special-user-roles-capabilities         @link: https://developer.wordpress.org/plugins/wordpress-org/special-user-roles-capabilities/
  *
  */
 function add_marketing_team_capabilities() {
@@ -247,16 +234,19 @@ function add_admin_capabilities() {
 add_action('admin_init', 'add_admin_capabilities'); // Admin capabilities on admin init
 
 
-/** Plugins Menus
+/** 3. Menus
+ * 
+ * - Top Menu
  * @link:  https://developer.wordpress.org/plugins/administration-menus/top-level-menus/
- * Top Menu
- * add_menu_page( string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, string $icon_url = ”, int|float $position = null ): string
+ * - add_menu_page( string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, string $icon_url = ”, int|float $position = null ): string
  * @link: https://developer.wordpress.org/reference/functions/add_menu_page/
- * Sub Menu
+ * 
+ * -    Sub Menu
  * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/ 
  * add_submenu_page( string $parent_slug, string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, int|float $position = null ): string|false
  * @link: https://developer.wordpress.org/reference/functions/add_submenu_page/
- *  PreDefined Sub Menus 
+ *
+ *   -    PreDefined Sub Menus 
  * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/#predefined-sub-menus
  * @link: https://developer.wordpress.org/plugins/settings/
  * @link: https://developer.wordpress.org/plugins/settings/settings-api/
@@ -277,6 +267,16 @@ function custom_gallery_plugin_menu() {
     }
 }
 add_action('admin_menu', 'custom_gallery_plugin_menu');
+
+/**
+ * 4. Handle File Uploads
+ * 	wp_check_filetype                   @link:  https://developer.wordpress.org/reference/functions/wp_check_filetype/
+ *	wp_handle_upload                    @link:  https://developer.wordpress.org/reference/functions/wp_handle_upload/
+ *  wp_insert_attachment                @link: 	https://developer.wordpress.org/reference/functions/wp_insert_attachment/
+ *	wp_generate_attachment_metadata     @link:  https://developer.wordpress.org/reference/functions/wp_generate_attachment_metadata/
+ *	set_post_thumbnail                  @link: 	https://developer.wordpress.org/reference/functions/set_post_thumbnail/
+ */
+
 
 function handle_custom_gallery_upload() {
     // Check if a file is uploaded
@@ -330,8 +330,9 @@ function handle_custom_gallery_upload() {
 }
 add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
 
-/** Plugins Page and Styles
- * */
+/** 5. Plugins Page and Styles
+ * 
+ * **/
 function custom_gallery_plugin_page() {
     // Fetch gallery images
     $gallery_images = get_posts([
@@ -385,7 +386,7 @@ function custom_gallery_plugin_page() {
     echo '</div>';
 }
 
-// Add the CSS to style the gallery images and form
+// 5.1 Add the CSS to style the gallery images and form
 function custom_gallery_plugin_styles() {
     echo '<style>
         .gallery-images {
@@ -405,7 +406,10 @@ function custom_gallery_plugin_styles() {
 }
 add_action('admin_head', 'custom_gallery_plugin_styles');
 
-//Debug User Roles and Capabilities
+
+
+
+// 1. Debug User Roles and Capabilities
 
 function check_current_user_capabilities() {
     $current_user = wp_get_current_user();
@@ -415,5 +419,3 @@ function check_current_user_capabilities() {
     echo '</pre>';
 }
 add_action('admin_notices', 'check_current_user_capabilities'); // This will display the roles and capabilities in the admin area.
-
-
