@@ -1,4 +1,7 @@
 <?php
+/**
+ * 1. Header Requirements
+ */
 /*
 Plugin Name: Custom Gallery Plugin
 Description: A WordPress plugin to display a simple custom gallery.
@@ -19,13 +22,9 @@ Author: Omar Ashraf Zeinhom - ANDGOEDU
  */
 
 
-/**
- * Activation & Deactivation Hooks.
- * @link : https://developer.wordpress.org/reference/functions/register_activation_hook/
- * register_activation_hook( string $file, callable $callback )
+/** 4. Register Gallery Post
  * 
- *
- */
+ * */
 
 function register_gallery_post() {
     register_post_type('galleryimage', [
@@ -54,41 +53,51 @@ function register_gallery_post() {
 }
 add_action('init', 'register_gallery_post');
 
+/** 3. Activation & Deactivation Hooks.
+ * 
+ * @link : https://developer.wordpress.org/reference/functions/register_activation_hook/
+ * register_activation_hook( string $file, callable $callback )
+ * 
+ *
+ */
 
+// 3.1 
 function activate_custom_gallery_plugin() {
     // Register the Custom Post Type
     register_gallery_post();
     // Add the roles and capabilities
+    // 1.1 
     add_marketing_team_role();
+    // 2.2 
+    add_marketing_team_capabilities();
+    // 2.3 
     add_admin_capabilities();
     // Clear the permalinks after the post type has been registered.
     flush_rewrite_rules();
 }
 register_activation_hook(__FILE__, 'activate_custom_gallery_plugin');
 
-
+//  3.2
 function deactivate_custom_gallery_plugin()
 {
     // UnRegister the Custom Post Type 
     unregister_post_type('galleryimage');
-    //unregister_post_type();
+    //1.2 
+    remove_role('marketing_team');
     // Clear the permalinks after the post type has been registered.
     flush_rewrite_rules();
 }
 
 register_deactivation_hook(__FILE__, 'deactivate_custom_gallery_plugin'); // Fix here
 
-
-
-
-/** Determining Plugin and Content Directories 
+/** 5. Determining Plugin and Content Directories 
  *  @link: https://developer.wordpress.org/plugins/plugin-basics/determining-plugin-and-content-directories/#themes
  */
 
-
-// DEBUG CODE
-// var_dump(wp_upload_dir());
-// This Can Be Removed or tested with any of the above 
+/** 6. Uninstall Methods  
+ *  @link: https://developer.wordpress.org/plugins/plugin-basics/determining-plugin-and-content-directories/#themes
+ */
+//
 
 
 function custom_gallery_plugin_uninstall()
@@ -117,7 +126,7 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
 
 
 
-/** Licenses
+/** 7. Licenses
  * GNU Licenses 
  * @link: https://www.gnu.org/licenses/license-list.html#OtherLicenses
  * @link: https://opensource.org/licenses
@@ -126,7 +135,7 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
 
 
 
-/*
+/*  Security - Videos From 8 to 13
  *  ****************************************************************************************
  *         _______. _______   ______  __    __  .______       __  .___________.____    ____ 
  *        /       ||   ____| /      ||  |  |  | |   _  \     |  | |           |\   \  /   / 
@@ -159,8 +168,8 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
 
 
 
-/** 
- * 1. Roles
+/** 8. Roles
+ * 
  * 
  * 1. Super Admin
  * 2. Administrator
@@ -178,6 +187,7 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
  *   
  **/
 
+ // 8.1 Roles
  function add_marketing_team_role() {
     add_role(
         'marketing_team',
@@ -186,8 +196,9 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
 }
 add_action('init', 'add_marketing_team_role');
 
-/**
- * 2. Capabilties
+
+/** 9. Capabilties
+ * 
  *                               
  *  Checking User Capabilities              @link: https://developer.wordpress.org/plugins/security/checking-user-capabilities/
  *  WP_Role::has_cap( string $cap ): bool   @link:  https://developer.wordpress.org/reference/classes/wp_role/has_cap/
@@ -224,6 +235,7 @@ function add_marketing_team_capabilities() {
 }
 add_action('init', 'add_marketing_team_capabilities');
 
+// 9.1  add_admin_capabilities
 function add_admin_capabilities() {
     $role = get_role('administrator');
     if ($role) {
@@ -252,7 +264,7 @@ function add_admin_capabilities() {
 add_action('admin_init', 'add_admin_capabilities'); // Admin capabilities on admin init
 
 
-/** 3. Menus
+/** 10. Menus
  * 
  * - Top Menu
  * @link:  https://developer.wordpress.org/plugins/administration-menus/top-level-menus/
@@ -268,6 +280,7 @@ add_action('admin_init', 'add_admin_capabilities'); // Admin capabilities on adm
  * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/#predefined-sub-menus
  * @link: https://developer.wordpress.org/plugins/settings/
  * @link: https://developer.wordpress.org/plugins/settings/settings-api/
+ * 
  * */
 
 function custom_gallery_plugin_menu() {
@@ -286,8 +299,9 @@ function custom_gallery_plugin_menu() {
 }
 add_action('admin_menu', 'custom_gallery_plugin_menu');
 
-/**
- * 4. Handle File Uploads
+
+/**  11.  Handle File Uploads
+ * 
  * 	wp_check_filetype                   @link:  https://developer.wordpress.org/reference/functions/wp_check_filetype/
  *	wp_handle_upload                    @link:  https://developer.wordpress.org/reference/functions/wp_handle_upload/
  *  wp_insert_attachment                @link: 	https://developer.wordpress.org/reference/functions/wp_insert_attachment/
@@ -348,7 +362,8 @@ function handle_custom_gallery_upload() {
 }
 add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
 
-/** 5. Plugins Page and Styles
+
+/** 12 - Plugins Page and Styles
  * 
  * **/
 function custom_gallery_plugin_page() {
@@ -404,7 +419,7 @@ function custom_gallery_plugin_page() {
     echo '</div>';
 }
 
-// 5.1 Add the CSS to style the gallery images and form
+// 12.1 Add the CSS to style the gallery images and form
 function custom_gallery_plugin_styles() {
     echo '<style>
         .gallery-images {
@@ -427,7 +442,7 @@ add_action('admin_head', 'custom_gallery_plugin_styles');
 
 
 
-// 0. Debug User Roles and Capabilities
+// 8.0 Debug User Roles and Capabilities
 
 function check_current_user_capabilities() {
     $current_user = wp_get_current_user();
