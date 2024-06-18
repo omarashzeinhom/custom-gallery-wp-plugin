@@ -117,7 +117,7 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
 
 
 
-/**
+/** Licenses
  * GNU Licenses 
  * @link: https://www.gnu.org/licenses/license-list.html#OtherLicenses
  * @link: https://opensource.org/licenses
@@ -168,14 +168,7 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
  * remove_role( string $role )
  * @link:https://developer.wordpress.org/reference/functions/remove_role/
  * 
- * Capabilties
- * WP_Role::has_cap( string $cap ): bool
- * @link:  https://developer.wordpress.org/reference/classes/wp_role/has_cap/
- *  class WP_Role {}
- * @link: https://developer.wordpress.org/reference/classes/wp_role/
- *  
- * @link: https://developer.wordpress.org/apis/security/user-roles-and-capabilities/
- *
+
  *  
  **/
 
@@ -189,6 +182,16 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
 }
 add_action('init', 'add_marketing_team_role');
 
+/**
+ * Capabilties
+ * WP_Role::has_cap( string $cap ): bool
+ * @link:  https://developer.wordpress.org/reference/classes/wp_role/has_cap/
+ *  class WP_Role {}
+ * @link: https://developer.wordpress.org/reference/classes/wp_role/
+ *  
+ * @link: https://developer.wordpress.org/apis/security/user-roles-and-capabilities/
+ *
+ */
 function add_marketing_team_capabilities() {
     $role = get_role('marketing_team');
     if ($role) {
@@ -244,6 +247,20 @@ function add_admin_capabilities() {
 add_action('admin_init', 'add_admin_capabilities'); // Admin capabilities on admin init
 
 
+/** Plugins Menus
+ * @link:  https://developer.wordpress.org/plugins/administration-menus/top-level-menus/
+ * Top Menu
+ * add_menu_page( string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, string $icon_url = ”, int|float $position = null ): string
+ * @link: https://developer.wordpress.org/reference/functions/add_menu_page/
+ * Sub Menu
+ * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/ 
+ * add_submenu_page( string $parent_slug, string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, int|float $position = null ): string|false
+ * @link: https://developer.wordpress.org/reference/functions/add_submenu_page/
+ *  PreDefined Sub Menus 
+ * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/#predefined-sub-menus
+ * @link: https://developer.wordpress.org/plugins/settings/
+ * @link: https://developer.wordpress.org/plugins/settings/settings-api/
+ * */
 
 function custom_gallery_plugin_menu() {
     // Only allow users who can edit gallery images to access this menu
@@ -313,6 +330,8 @@ function handle_custom_gallery_upload() {
 }
 add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
 
+/** Plugins Page and Styles
+ * */
 function custom_gallery_plugin_page() {
     // Fetch gallery images
     $gallery_images = get_posts([
@@ -398,18 +417,3 @@ function check_current_user_capabilities() {
 add_action('admin_notices', 'check_current_user_capabilities'); // This will display the roles and capabilities in the admin area.
 
 
-
-/** Plugins Menus
- * @link:  https://developer.wordpress.org/plugins/administration-menus/top-level-menus/
- * Top Menu
- * add_menu_page( string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, string $icon_url = ”, int|float $position = null ): string
- * @link: https://developer.wordpress.org/reference/functions/add_menu_page/
- * Sub Menu
- * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/ 
- * add_submenu_page( string $parent_slug, string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, int|float $position = null ): string|false
- * @link: https://developer.wordpress.org/reference/functions/add_submenu_page/
- *  PreDefined Sub Menus 
- * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/#predefined-sub-menus
- * @link: https://developer.wordpress.org/plugins/settings/
- * @link: https://developer.wordpress.org/plugins/settings/settings-api/
- * */
