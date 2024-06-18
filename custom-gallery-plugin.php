@@ -136,7 +136,25 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
  *  |_______/    |_______| \______| \______/  | _| `._____||__|     |__|         |__| 
  * 
  *  ****************************************************************************************
- */
+ * Guiding principles
+ *
+ *  Never trust user input.
+ *  Escape as late as possible.
+ *  Escape everything from untrusted sources (e.g., databases and users), third-parties (e.g., Twitter), etc.
+ *  Never assume anything.
+ *  Sanitation is okay, but validation/rejection is better.
+ * 
+ *  Security    @link: https://developer.wordpress.org/apis/security/
+ * 
+ * From Video 8 To 13 
+ * 8  - User Roles
+ * 9  - User Capabilties
+ * 10 - Menus
+ * 11 - Form Uploads
+ * 12 - Styling Plugin
+ * 13 - Sanitizing and Validating 
+ * 
+ * **/
 
 
 
@@ -409,7 +427,7 @@ add_action('admin_head', 'custom_gallery_plugin_styles');
 
 
 
-// 1. Debug User Roles and Capabilities
+// 0. Debug User Roles and Capabilities
 
 function check_current_user_capabilities() {
     $current_user = wp_get_current_user();
