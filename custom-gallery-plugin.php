@@ -253,3 +253,37 @@ function add_all_team_capabilities() {
 }
 add_action('admin_init', 'add_all_team_capabilities');
 
+/** 10. Menus
+ * 
+ * - Top Menu
+ * @link:  https://developer.wordpress.org/plugins/administration-menus/top-level-menus/
+ * - add_menu_page( string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, string $icon_url = ”, int|float $position = null ): string
+ * @link: https://developer.wordpress.org/reference/functions/add_menu_page/
+ * 
+ * -    Sub Menu
+ * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/ 
+ * add_submenu_page( string $parent_slug, string $page_title, string $menu_title, string $capability, string $menu_slug, callable $callback = ”, int|float $position = null ): string|false
+ * @link: https://developer.wordpress.org/reference/functions/add_submenu_page/
+ *
+ *   -    PreDefined Sub Menus 
+ * @link: https://developer.wordpress.org/plugins/administration-menus/sub-menus/#predefined-sub-menus
+ * @link: https://developer.wordpress.org/plugins/settings/
+ * @link: https://developer.wordpress.org/plugins/settings/settings-api/
+ * 
+ * */
+
+ function custom_gallery_plugin_menu() {
+    // Only allow users who can edit gallery images to access this menu
+    if (current_user_can('edit_galleryimages')) {
+        add_menu_page(
+            'Add New Gallery Image',
+            'Gallery',
+            'edit_galleryimages', // Capability required to access this menu
+            'custom-gallery-plugin',    
+            'custom_gallery_plugin_page', // Custom Page
+            'dashicons-format-gallery', // Dash Icon
+            6
+        );
+    }
+}
+add_action('admin_menu', 'custom_gallery_plugin_menu');
