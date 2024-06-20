@@ -287,3 +287,77 @@ add_action('admin_init', 'add_all_team_capabilities');
     }
 }
 add_action('admin_menu', 'custom_gallery_plugin_menu');
+
+
+/**  11.  Handle File Uploads
+ * 
+ * 	wp_check_filetype                   @link:  https://developer.wordpress.org/reference/functions/wp_check_filetype/
+ *	wp_handle_upload                    @link:  https://developer.wordpress.org/reference/functions/wp_handle_upload/
+ *  wp_insert_attachment                @link: 	https://developer.wordpress.org/reference/functions/wp_insert_attachment/
+ *	wp_generate_attachment_metadata     @link:  https://developer.wordpress.org/reference/functions/wp_generate_attachment_metadata/
+ *	set_post_thumbnail                  @link: 	https://developer.wordpress.org/reference/functions/set_post_thumbnail/
+ */
+
+
+ function handle_custom_gallery_upload() {
+    // Check if files are uploaded and a title is provided
+    if (!empty($_FILES['gallery_images']) && !empty($_POST['image_title'])) {
+        $files = $_FILES['gallery_images'];
+        $title = sanitize_text_field($_POST['image_title']);
+        
+        // Create a new post in 'galleryimage' post type
+        $post_id = wp_insert_post([
+            'post_title' => $title,
+            'post_type' => 'galleryimage',
+            'post_status' => 'publish'
+        ]);
+
+        if ($post_id) {
+            // Loop through each uploaded file
+            foreach ($files['name'] as $key => $value) {
+                if ($files['name'][$key]) {
+                    // Process each file
+                    $file = [
+                        'name'     => $files['name'][$key],
+                        'type'     => $files['type'][$key],
+                        'tmp_name' => $files['tmp_name'][$key],
+                        'error'    => $files['error'][$key],
+                        'size'     => $files['size'][$key]
+                    ];
+
+                    // Verify the file type
+                    $file_type = wp_check_filetype($file['name']);
+                    $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+                    if (in_array($file_type['type'], $allowed_types)) {
+                        // Upload the file
+                        $uploaded = wp_handle_upload($file, ['test_form' => false]);
+
+                        if (isset($uploaded['file'])) {
+                            $file_path = $uploaded['file'];
+                            $file_url = $uploaded['url'];
+
+                            // Attach the uploaded image to the post
+                            $attachment_id = wp_insert_attachment([
+                                'guid' => $file_url,
+                                'post_mime_type' => $file_type['type'],
+                                'post_title' => $title,
+                                'post_content' => '',
+                                'post_status' => 'inherit'
+                            ], $file_path, $post_id);
+
+                            // Generate the metadata for the attachment, and update the database record
+                            require_once(ABSPATH . 'wp-admin/includes/image.php');
+                            $attach_data = wp_generate_attachment_metadata($attachment_id, $file_path);
+                            wp_update_attachment_metadata($attachment_id, $attach_data);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // Redirect back to the plugin page
+    wp_redirect(admin_url('admin.php?page=custom-gallery-plugin'));
+    exit;
+}
+add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
