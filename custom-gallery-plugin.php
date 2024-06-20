@@ -254,7 +254,7 @@ function add_all_team_capabilities() {
 add_action('admin_init', 'add_all_team_capabilities');
 
 
-/** 10. Menus
+/** 10. Validation & Menus
  * 
  * - Top Menu
  * @link:  https://developer.wordpress.org/plugins/administration-menus/top-level-menus/
