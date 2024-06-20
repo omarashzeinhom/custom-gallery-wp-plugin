@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 1. Header Requirements
  */
@@ -26,40 +27,41 @@ Author: Omar Ashraf Zeinhom - ANDGOEDU
  * 
  * */
 
-function register_gallery_post() {
-    $args = 
-    [
-        'public' => true,
-        'label' => 'Gallery Image',
-        'description'=> 'Manage your galleries here',
-        'show_in_rest'=> true, // optional to be exposed in the REST API.
-        'rest_base'=> 'gallery-image', // base slug for REST API
-        'menu_icon' => 'dashicons-format-gallery',
-        'has_archive'=> true,
-        'show_in_menu'=> true,
-        'supports'=> array('
+function register_gallery_post()
+{
+    $args =
+        [
+            'public' => true,
+            'label' => 'Gallery Image',
+            'description' => 'Manage your galleries here',
+            'show_in_rest' => true, // optional to be exposed in the REST API.
+            'rest_base' => 'gallery-image', // base slug for REST API
+            'menu_icon' => 'dashicons-format-gallery',
+            'has_archive' => true,
+            'show_in_menu' => true,
+            'supports' => array('
         title', 'editor', 'author', 'thumbnail', 'excerpt'), // supports
-        'capability_type' => 'galleryimage',
-        'map_meta_cap' => true, // Ensures custom capabilities are mapped correctly
-        'capabilities' => [
-            'edit_post' => 'edit_galleryimage',
-            'read_post' => 'read_galleryimage',
-            'delete_post' => 'delete_galleryimage',
-            'edit_posts' => 'edit_galleryimages',
-            'edit_others_posts' => 'edit_others_galleryimages',
-            'publish_posts' => 'publish_galleryimages',
-            'read_private_posts' => 'read_private_galleryimages',
-            'delete_posts' => 'delete_galleryimages',
-            'delete_private_posts' => 'delete_private_galleryimages',
-            'delete_published_posts' => 'delete_published_galleryimages',
-            'delete_others_posts' => 'delete_others_galleryimages',
-            'edit_private_posts' => 'edit_private_galleryimages',
-            'edit_published_posts' => 'edit_published_galleryimages',
-            'create_posts' => 'create_galleryimages',
-        ]
+            'capability_type' => 'galleryimage',
+            'map_meta_cap' => true, // Ensures custom capabilities are mapped correctly
+            'capabilities' => [
+                'edit_post' => 'edit_galleryimage',
+                'read_post' => 'read_galleryimage',
+                'delete_post' => 'delete_galleryimage',
+                'edit_posts' => 'edit_galleryimages',
+                'edit_others_posts' => 'edit_others_galleryimages',
+                'publish_posts' => 'publish_galleryimages',
+                'read_private_posts' => 'read_private_galleryimages',
+                'delete_posts' => 'delete_galleryimages',
+                'delete_private_posts' => 'delete_private_galleryimages',
+                'delete_published_posts' => 'delete_published_galleryimages',
+                'delete_others_posts' => 'delete_others_galleryimages',
+                'edit_private_posts' => 'edit_private_galleryimages',
+                'edit_published_posts' => 'edit_published_galleryimages',
+                'create_posts' => 'create_galleryimages',
+            ]
         ];
 
-    register_post_type('galleryimage', $args );
+    register_post_type('galleryimage', $args);
 }
 add_action('init', 'register_gallery_post');
 
@@ -72,7 +74,8 @@ add_action('init', 'register_gallery_post');
  */
 
 // 3.1 
-function activate_custom_gallery_plugin() {
+function activate_custom_gallery_plugin()
+{
     // Register the Custom Post Type
     register_gallery_post();
     // Add the roles and capabilities
@@ -195,14 +198,15 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
  *   
  **/
 
- // 8.1 Roles
- function add_marketing_team_role() {
+// 8.1 Roles
+function add_marketing_team_role()
+{
     add_role(
         'marketing_team',
         'Marketing Team',
         array(
-           'read' => true,
-            'upload_files'=> true,
+            'read' => true,
+            'upload_files' => true,
             'edit_files' => true,
             'edit_galleryimage'  => true,
             'read_galleryimage'  => true,
@@ -235,7 +239,8 @@ add_action('init', 'add_marketing_team_role');
  *  special-user-roles-capabilities         @link: https://developer.wordpress.org/plugins/wordpress-org/special-user-roles-capabilities/
  *
  */
-function add_all_team_capabilities() {
+function add_all_team_capabilities()
+{
     $roles = ['administrator', 'marketing_team'];
 
     foreach ($roles as $role_name) {
@@ -273,14 +278,15 @@ add_action('admin_init', 'add_all_team_capabilities');
  * 
  * */
 
-function custom_gallery_plugin_menu() {
+function custom_gallery_plugin_menu()
+{
     // Only allow users who can edit gallery images to access this menu
     if (current_user_can('edit_galleryimages')) {
         add_menu_page(
             'Add New Gallery Image',
             'Gallery',
             'edit_galleryimages', // Capability required to access this menu
-            'custom-gallery-plugin',    
+            'custom-gallery-plugin',
             'custom_gallery_plugin_page', // Custom Page
             'dashicons-format-gallery', // Dash Icon
             6
@@ -300,12 +306,13 @@ add_action('admin_menu', 'custom_gallery_plugin_menu');
  */
 
 
- function handle_custom_gallery_upload() {
+function handle_custom_gallery_upload()
+{
     // Check if files are uploaded and a title is provided
     if (!empty($_FILES['gallery_images']) && !empty($_POST['image_title'])) {
         $files = $_FILES['gallery_images'];
         $title = sanitize_text_field($_POST['image_title']);
-        
+
         // Create a new post in 'galleryimage' post type
         $post_id = wp_insert_post([
             'post_title' => $title,
@@ -368,9 +375,10 @@ add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
  * 
  * **/
 // Display the admin page for managing the gallery
-function custom_gallery_plugin_page() {
+function custom_gallery_plugin_page()
+{
     echo '<h1>Gallery Plugin</h1>';
-    
+
     // Form to upload new gallery images
     echo '<h2>Upload New Images</h2>';
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
@@ -409,7 +417,8 @@ function custom_gallery_plugin_page() {
 
 
 // 12.1 Add the CSS to style the gallery images and form
-function custom_gallery_plugin_styles() {
+function custom_gallery_plugin_styles()
+{
     echo '<style>
         .gallery-images {
             display: flex;
@@ -458,7 +467,8 @@ add_action('admin_head', 'custom_gallery_plugin_styles');
 
 // 8.0 Debug User Roles and Capabilities
 
-function check_current_user_capabilities() {
+function check_current_user_capabilities()
+{
     $current_user = wp_get_current_user();
     echo '<pre>';
     //print_r($current_user->roles); // Print user roles
@@ -474,7 +484,8 @@ add_action('admin_notices', 'check_current_user_capabilities'); // This will dis
 // 17. Add JavaScript to Carousel.
 
 
-function display_gallery_carousel($atts) {
+function display_gallery_carousel($atts)
+{
     $atts = shortcode_atts(['id' => ''], $atts, 'gallery_carousel');
     $post_id = intval($atts['id']);
 
