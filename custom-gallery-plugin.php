@@ -253,6 +253,7 @@ function add_all_team_capabilities() {
 }
 add_action('admin_init', 'add_all_team_capabilities');
 
+
 /** 10. Menus
  * 
  * - Top Menu
@@ -272,7 +273,7 @@ add_action('admin_init', 'add_all_team_capabilities');
  * 
  * */
 
- function custom_gallery_plugin_menu() {
+function custom_gallery_plugin_menu() {
     // Only allow users who can edit gallery images to access this menu
     if (current_user_can('edit_galleryimages')) {
         add_menu_page(
@@ -361,7 +362,6 @@ add_action('admin_menu', 'custom_gallery_plugin_menu');
     exit;
 }
 add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
-
 
 
 /** 12 - Plugins Page and Styles
