@@ -3,7 +3,7 @@
  * 1. Header Requirements
  */
 /*
-Plugin Name: Custom Gallery Plugin
+Plugin Name: Mini Gallery
 Description: A WordPress plugin to display a simple custom gallery.
 Version: 1.0
 Author: Omar Ashraf Zeinhom - ANDGOEDU
@@ -369,7 +369,7 @@ add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
  * **/
 // Display the admin page for managing the gallery
 function custom_gallery_plugin_page() {
-    echo '<h1>Gallery Plugin</h1>';
+    echo '<h1>Mini Gallery</h1>';
     
     // Form to upload new gallery images
     echo '<h2>Upload New Images</h2>';
