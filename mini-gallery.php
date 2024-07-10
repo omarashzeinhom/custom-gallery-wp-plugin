@@ -36,7 +36,7 @@ function register_gallery_post() {
         'rest_base'=> 'gallery-image', // base slug for REST API
         'menu_icon' => 'dashicons-format-gallery',
         'has_archive'=> true,
-        'show_in_menu'=> true,
+        'show_in_menu'=> false,
         'supports'=> array('
         title', 'editor', 'author', 'thumbnail', 'excerpt'), // supports
         'capability_type' => 'galleryimage',
