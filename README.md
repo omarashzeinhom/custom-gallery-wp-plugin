@@ -1,4 +1,4 @@
-# Custom WordPress Gallery Plugin For PlayList
+# MiniGallery
 
 - Project Structure
 
