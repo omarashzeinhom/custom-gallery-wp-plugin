@@ -6,7 +6,8 @@
 Plugin Name: Mini Gallery
 Description: A WordPress plugin to display a simple custom gallery.
 Version: 1.0
-Author: Omar Ashraf Zeinhom - ANDGOEDU
+Author: Omar Ashraf Zeinhom AbdElRahman | ANDGOEDU
+License: GPLv2 
 */
 
 /*
@@ -118,7 +119,7 @@ function custom_gallery_plugin_uninstall()
 
 
     foreach ($gallery_images as $gallery_image) {
-        wp_delete_post($gallery_image->ID, true);
+        wp_delete_post(intval($gallery_image->ID), true);
     }
 
     /**
@@ -301,67 +302,72 @@ add_action('admin_menu', 'custom_gallery_plugin_menu');
 
 
  function handle_custom_gallery_upload() {
-    // Check if files are uploaded and a title is provided
-    if (!empty($_FILES['gallery_images']) && !empty($_POST['image_title'])) {
-        $files = $_FILES['gallery_images'];
-        $title = sanitize_text_field($_POST['image_title']);
-        
-        // Create a new post in 'galleryimage' post type
-        $post_id = wp_insert_post([
-            'post_title' => $title,
-            'post_type' => 'galleryimage',
-            'post_status' => 'publish'
-        ]);
+    // Verify nonce
+    if ( !isset( $_POST['custom_gallery_upload_nonce'] ) || !wp_verify_nonce( $_POST['custom_gallery_upload_nonce'], 'custom_gallery_upload_nonce' ) ) {
+      wp_die( 'Security check' ); 
+  }
+  // Check if files are uploaded and a title is provided
+  if (!empty($_FILES['gallery_images']) && !empty($_POST['image_title'])) {
+      $files = $_FILES['gallery_images'];
+      $title = sanitize_text_field($_POST['image_title']);
+      
+      // Create a new post in 'galleryimage' post type
+      $post_id = wp_insert_post([
+          'post_title' => $title,
+          'post_type' => 'galleryimage',
+          'post_status' => 'publish'
+      ]);
 
-        if ($post_id) {
-            // Loop through each uploaded file
-            foreach ($files['name'] as $key => $value) {
-                if ($files['name'][$key]) {
-                    // Process each file
-                    $file = [
-                        'name'     => $files['name'][$key],
-                        'type'     => $files['type'][$key],
-                        'tmp_name' => $files['tmp_name'][$key],
-                        'error'    => $files['error'][$key],
-                        'size'     => $files['size'][$key]
-                    ];
+      if ($post_id) {
+          // Loop through each uploaded file
+          foreach ($files['name'] as $key => $value) {
+              if ($files['name'][$key]) {
+                  // Process each file
+                  $file = [
+                      'name'     => $files['name'][$key],
+                      'type'     => $files['type'][$key],
+                      'tmp_name' => $files['tmp_name'][$key],
+                      'error'    => $files['error'][$key],
+                      'size'     => $files['size'][$key]
+                  ];
 
-                    // Verify the file type
-                    $file_type = wp_check_filetype($file['name']);
-                    $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                  // Verify the file type
+                  $file_type = wp_check_filetype($file['name']);
+                  $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
 
-                    if (in_array($file_type['type'], $allowed_types)) {
-                        // Upload the file
-                        $uploaded = wp_handle_upload($file, ['test_form' => false]);
+                  if (in_array($file_type['type'], $allowed_types)) {
+                      // Upload the file
+                      $uploaded = wp_handle_upload($file, ['test_form' => false]);
 
-                        if (isset($uploaded['file'])) {
-                            $file_path = $uploaded['file'];
-                            $file_url = $uploaded['url'];
+                      if (isset($uploaded['file'])) {
+                          $file_path = $uploaded['file'];
+                          $file_url = $uploaded['url'];
 
-                            // Attach the uploaded image to the post
-                            $attachment_id = wp_insert_attachment([
-                                'guid' => $file_url,
-                                'post_mime_type' => $file_type['type'],
-                                'post_title' => $title,
-                                'post_content' => '',
-                                'post_status' => 'inherit'
-                            ], $file_path, $post_id);
+                          // Attach the uploaded image to the post
+                          $attachment_id = wp_insert_attachment([
+                              'guid' => $file_url,
+                              'post_mime_type' => $file_type['type'],
+                              'post_title' => $title,
+                              'post_content' => '',
+                              'post_status' => 'inherit'
+                          ], $file_path, $post_id);
 
-                            // Generate the metadata for the attachment, and update the database record
-                            require_once(ABSPATH . 'wp-admin/includes/image.php');
-                            $attach_data = wp_generate_attachment_metadata($attachment_id, $file_path);
-                            wp_update_attachment_metadata($attachment_id, $attach_data);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    // Redirect back to the plugin page
-    wp_redirect(admin_url('admin.php?page=custom-gallery-plugin'));
-    exit;
+                          // Generate the metadata for the attachment, and update the database record
+                          require_once(ABSPATH . 'wp-admin/includes/image.php');
+                          $attach_data = wp_generate_attachment_metadata($attachment_id, $file_path);
+                          wp_update_attachment_metadata($attachment_id, $attach_data);
+                      }
+                  }
+              }
+          }
+      }
+  }
+  // Redirect back to the plugin page
+  wp_redirect(admin_url('admin.php?page=custom-gallery-plugin'));
+  exit;
 }
 add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
+
 
 
 /** 12 - Plugins Page and Styles
@@ -369,43 +375,54 @@ add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
  * **/
 // Display the admin page for managing the gallery
 function custom_gallery_plugin_page() {
-    echo '<h1>Mini Gallery</h1>';
+    echo '<h1>' . esc_html__('Mini Gallery', 'mini-gallery') . '</h1>';
     
     // Form to upload new gallery images
-    echo '<h2>Upload New Images</h2>';
+    echo '<h2>' . esc_html__('Upload New Images', 'mini-gallery') . '</h2>';
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
+    
+    // Add nonce field
+    wp_nonce_field('custom_gallery_upload_nonce', 'custom_gallery_upload_nonce');
+
     echo '<input type="hidden" name="action" value="custom_gallery_upload">';
-    echo '<label for="gallery_images">Select Images:</label>';
+    echo '<label for="gallery_images">' . esc_html__('Select Images:', 'mini-gallery') . '</label>';
     echo '<input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" required multiple>';
     echo '<br><br>';
-    echo '<label for="image_title">Gallery Title:</label>';
+    echo '<label for="image_title">' . esc_html__('Gallery Title:', 'mini-gallery') . '</label>';
     echo '<input type="text" id="image_title" name="image_title" required>';
     echo '<br><br>';
-    echo '<input type="submit" class="button button-primary" value="Upload Images">';
+    echo '<input type="submit" class="button button-primary" value="' . esc_attr__('Upload Images', 'mini-gallery') . '">';
     echo '</form>';
 
     // Display existing galleries with their IDs and shortcodes
-    echo '<h2>Existing Galleries</h2>';
+    echo '<h2>' . esc_html__('Existing Galleries', 'mini-gallery') . '</h2>';
     $galleries = get_posts(['post_type' => 'galleryimage', 'numberposts' => -1]);
+
     if ($galleries) {
         foreach ($galleries as $gallery) {
+            // Ensure each property of $gallery is escaped
+            $gallery_title = esc_html($gallery->post_title);
+            $gallery_content = esc_html($gallery->post_content);
+            $gallery_id = intval($gallery->ID);
+
             echo '<div>';
-            echo '<h3>' . esc_html($gallery->post_title) . ' (ID: ' . $gallery->ID . ')</h3>';
-            echo '<p>' . esc_html($gallery->post_content) . '</p>';
+            echo '<h3>' . esc_html($gallery_title) . ' (ID: ' . esc_html($gallery_id) . ')</h3>';
+            echo '<p>' . esc_html($gallery_content) . '</p>';
 
             // Display the shortcode dynamically with the post ID
-            echo '<p>Shortcode to display this gallery:</p>';
-            echo '<pre>[gallery_carousel id="' . $gallery->ID . '"]</pre>';
+            echo '<p>' . esc_html__('Shortcode to display this gallery:', 'mini-gallery') . '</p>';
+            echo '<pre>[gallery_carousel id="' . esc_attr($gallery_id) . '"]</pre>';
 
             // Optionally, display the carousel preview using the shortcode
-            echo do_shortcode('[gallery_carousel id="' . $gallery->ID . '"]');
+            echo do_shortcode('[gallery_carousel id="' . esc_attr($gallery_id) . '"]');
             echo '</div>';
             echo '<hr>';
         }
     } else {
-        echo '<p>No galleries found.</p>';
+        echo '<p>' . esc_html__('No galleries found.', 'mini-gallery') . '</p>';
     }
 }
+
 
 
 // 12.1 Add the CSS to style the gallery images and form
@@ -417,7 +434,7 @@ function custom_gallery_plugin_styles() {
             gap: 20px;
         }
         .gallery-image {
-            width: 100%
+            width: 100%;
             text-align: center;
             max-width: 150px;
             margin-bottom: 20px;
@@ -430,7 +447,6 @@ function custom_gallery_plugin_styles() {
             transition: 0.2s ease-in-out;
             box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem gray;
             max-height: 75px;
-
         }
         .gallery-image img:hover {
             border: 1px solid #ccc;
@@ -448,13 +464,10 @@ function custom_gallery_plugin_styles() {
         }
         .gallery-image a:hover {
             text-decoration: underline;
-            
         }
     </style>';
 }
 add_action('admin_head', 'custom_gallery_plugin_styles');
-
-
 
 // 8.0 Debug User Roles and Capabilities
 
