@@ -9,7 +9,7 @@ Version: 1.0
 Author: Omar Ashraf Zeinhom AbdElRahman | ANDGOEDU
 License: GPLv2 
 */
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 /*
  *  ****************************************************************************************
  *  .______        ___           _______. __    ______     _______.
@@ -27,7 +27,7 @@ License: GPLv2
  * 
  * */
 
-function register_gallery_post() {
+function mg_post() {
     $args = 
     [
         'public' => true,
@@ -62,7 +62,7 @@ function register_gallery_post() {
 
     register_post_type('galleryimage', $args );
 }
-add_action('init', 'register_gallery_post');
+add_action('init', 'mg_post');
 
 /** 3. Activation & Deactivation Hooks.
  * 
@@ -73,21 +73,21 @@ add_action('init', 'register_gallery_post');
  */
 
 // 3.1 
-function activate_custom_gallery_plugin() {
+function mg_plugin_act() {
     // Register the Custom Post Type
-    register_gallery_post();
+    mg_post();
     // Add the roles and capabilities
     // 1.1 
-    add_marketing_team_role();
+    marketing_team_role();
     // 2.2 
-    add_all_team_capabilities();
+    mg_capabilities();
     // Clear the permalinks after the post type has been registered.
     flush_rewrite_rules();
 }
-register_activation_hook(__FILE__, 'activate_custom_gallery_plugin');
+register_activation_hook(__FILE__, 'mg_plugin_act');
 
 //  3.2
-function deactivate_custom_gallery_plugin()
+function mg_plugin_deact()
 {
     // UnRegister the Custom Post Type 
     unregister_post_type('galleryimage');
@@ -97,7 +97,7 @@ function deactivate_custom_gallery_plugin()
     flush_rewrite_rules();
 }
 
-register_deactivation_hook(__FILE__, 'deactivate_custom_gallery_plugin'); // Fix here
+register_deactivation_hook(__FILE__, 'mg_plugin_deact');
 
 /** 5. Determining Plugin and Content Directories 
  *  @link: https://developer.wordpress.org/plugins/plugin-basics/determining-plugin-and-content-directories/#themes
@@ -109,7 +109,7 @@ register_deactivation_hook(__FILE__, 'deactivate_custom_gallery_plugin'); // Fix
 //
 
 
-function custom_gallery_plugin_uninstall()
+function mg_plugin_uninstall()
 {
     $gallery_images = get_posts(array(
         'post_type' => 'galleryimage',
@@ -130,7 +130,7 @@ function custom_gallery_plugin_uninstall()
     remove_role('marketing_team');
 }
 
-register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
+register_uninstall_hook(__FILE__, 'mg_plugin_uninstall');
 
 
 
@@ -197,7 +197,7 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
  **/
 
  // 8.1 Roles
- function add_marketing_team_role() {
+ function marketing_team_role() {
     add_role(
         'marketing_team',
         'Marketing Team',
@@ -222,7 +222,7 @@ register_uninstall_hook(__FILE__, 'custom_gallery_plugin_uninstall');
         )
     );
 }
-add_action('init', 'add_marketing_team_role');
+add_action('init', 'marketing_team_role');
 
 
 /** 9. Capabilties
@@ -236,7 +236,7 @@ add_action('init', 'add_marketing_team_role');
  *  special-user-roles-capabilities         @link: https://developer.wordpress.org/plugins/wordpress-org/special-user-roles-capabilities/
  *
  */
-function add_all_team_capabilities() {
+function mg_capabilities() {
     $roles = ['administrator', 'marketing_team'];
 
     foreach ($roles as $role_name) {
@@ -252,7 +252,7 @@ function add_all_team_capabilities() {
         }
     }
 }
-add_action('admin_init', 'add_all_team_capabilities');
+add_action('admin_init', 'mg_capabilities');
 
 
 /** 10. Validation & Menus
@@ -274,21 +274,21 @@ add_action('admin_init', 'add_all_team_capabilities');
  * 
  * */
 
-function custom_gallery_plugin_menu() {
+function mg_menu() {
     // Only allow users who can edit gallery images to access this menu
     if (current_user_can('edit_galleryimages')) {
         add_menu_page(
             'Add New Gallery Image',
             'Gallery',
             'edit_galleryimages', // Capability required to access this menu
-            'custom-gallery-plugin',    
-            'custom_gallery_plugin_page', // Custom Page
+            'mini-gallery',    
+            'mg_plugin_page', // Custom Page
             'dashicons-format-gallery', // Dash Icon
             6
         );
     }
 }
-add_action('admin_menu', 'custom_gallery_plugin_menu');
+add_action('admin_menu', 'mg_menu');
 
 
 /**  11.  Handle File Uploads
@@ -301,9 +301,9 @@ add_action('admin_menu', 'custom_gallery_plugin_menu');
  */
 
 
- function handle_custom_gallery_upload() {
+ function mg_upload() {
     // Verify nonce
-    if ( !isset( $_POST['custom_gallery_upload_nonce'] ) || !wp_verify_nonce( $_POST['custom_gallery_upload_nonce'], 'custom_gallery_upload_nonce' ) ) {
+    if ( !isset( $_POST['mg_upload_nonce'] ) || !wp_verify_nonce( $_POST['mg_upload_nonce'], 'mg_upload_nonce' ) ) {
       wp_die( 'Security check' ); 
   }
   // Check if files are uploaded and a title is provided
@@ -363,10 +363,10 @@ add_action('admin_menu', 'custom_gallery_plugin_menu');
       }
   }
   // Redirect back to the plugin page
-  wp_redirect(admin_url('admin.php?page=custom-gallery-plugin'));
+  wp_redirect(admin_url('admin.php?page=mini-gallery'));
   exit;
 }
-add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
+add_action('admin_post_mg_upload', 'mg_upload');
 
 
 
@@ -374,7 +374,7 @@ add_action('admin_post_custom_gallery_upload', 'handle_custom_gallery_upload');
  * 
  * **/
 // Display the admin page for managing the gallery
-function custom_gallery_plugin_page() {
+function mg_plugin_page() {
     echo '<h1>' . esc_html__('Mini Gallery', 'mini-gallery') . '</h1>';
     
     // Form to upload new gallery images
@@ -382,9 +382,9 @@ function custom_gallery_plugin_page() {
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
     
     // Add nonce field
-    wp_nonce_field('custom_gallery_upload_nonce', 'custom_gallery_upload_nonce');
+    wp_nonce_field('mg_upload_nonce', 'mg_upload_nonce');
 
-    echo '<input type="hidden" name="action" value="custom_gallery_upload">';
+    echo '<input type="hidden" name="action" value="mg_upload">';
     echo '<label for="gallery_images">' . esc_html__('Select Images:', 'mini-gallery') . '</label>';
     echo '<input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" required multiple>';
     echo '<br><br>';
@@ -423,22 +423,20 @@ function custom_gallery_plugin_page() {
     }
 }
 
-
-
-function mini_gallery_styles() {
+function mg_styles() {
     wp_register_style('main', 'public/css/carousel_minigallery.css');
     wp_enqueue_style('main', 'public/css/carousel_minigallery.css');
 }
-add_action('admin_head', 'mini_gallery_styles');
+add_action('admin_head', 'mg_styles');
 
-function mini_gallery_js() {
+function mg_js() {
     wp_register_script('main', 'public/css/main_minigallery.js');
     wp_enqueue_script('main', 'public/css/carousel_minigallery.js');
 }
-add_action('admin_head', 'mini_gallery_styles');
+add_action('admin_head', 'mg_js');
 
 
-function display_gallery_carousel($atts) {
+function mg_carousel_shortcode($atts) {
     $atts = shortcode_atts(['id' => ''], $atts, 'gallery_carousel');
     $post_id = intval($atts['id']);
 
@@ -470,4 +468,4 @@ function display_gallery_carousel($atts) {
     $output .= '</div>';
     return $output;
 }
-add_shortcode('gallery_carousel', 'display_gallery_carousel');
+add_shortcode('gallery_carousel', 'mg_carousel_shortcode');
