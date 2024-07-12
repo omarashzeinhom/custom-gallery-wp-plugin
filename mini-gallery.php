@@ -425,66 +425,17 @@ function custom_gallery_plugin_page() {
 
 
 
-// 12.1 Add the CSS to style the gallery images and form
-function custom_gallery_plugin_styles() {
-    echo '<style>
-        .gallery-images {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .gallery-image {
-            width: 100%;
-            text-align: center;
-            max-width: 150px;
-            margin-bottom: 20px;
-        }
-        .gallery-image img {
-            border: 1px solid #ccc;
-            padding: 5px;
-            background: #f9f9f9;
-            opacity: 0.7;
-            transition: 0.2s ease-in-out;
-            box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem gray;
-            max-height: 75px;
-        }
-        .gallery-image img:hover {
-            border: 1px solid #ccc;
-            padding: 5px;
-            background: #f9f9f9;
-            opacity: 1;
-            box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem black;
-        }
-        .gallery-image p {
-            margin: 5px 0;
-        }
-        .gallery-image a {
-            color: #0073aa;
-            text-decoration: none;
-        }
-        .gallery-image a:hover {
-            text-decoration: underline;
-        }
-    </style>';
+function mini_gallery_styles() {
+    wp_register_style('main', 'public/css/carousel_minigallery.css');
+    wp_enqueue_style('main', 'public/css/carousel_minigallery.css');
 }
-add_action('admin_head', 'custom_gallery_plugin_styles');
+add_action('admin_head', 'mini_gallery_styles');
 
-// 8.0 Debug User Roles and Capabilities
-
-function check_current_user_capabilities() {
-    $current_user = wp_get_current_user();
-    echo '<pre>';
-    //print_r($current_user->roles); // Print user roles
-    //print_r($current_user->allcaps); // Print user capabilities
-    echo '</pre>';
+function mini_gallery_js() {
+    wp_register_script('main', 'public/css/main_minigallery.js');
+    wp_enqueue_script('main', 'public/css/carousel_minigallery.js');
 }
-add_action('admin_notices', 'check_current_user_capabilities'); // This will display the roles and capabilities in the admin area.
-
-
-// 13. Make Carousel from Gallery Images Dynamically.
-// 14. Make Carousel Use Short Code to Display.
-// 15. Add Multiple Options for Carousels.
-// 16. Add JavaScript to Carousel.
+add_action('admin_head', 'mini_gallery_styles');
 
 
 function display_gallery_carousel($atts) {
@@ -517,54 +468,6 @@ function display_gallery_carousel($atts) {
         $output .= '</div>';
     }
     $output .= '</div>';
-
-    // Include the JavaScript for the carousel
-    $output .= '<script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var carousel = document.getElementById("gallery-carousel-' . $post_id . '");
-            if (carousel) {
-                var slides = carousel.getElementsByClassName("carousel-slide");
-                var currentIndex = 0;
-
-                function showSlide(index) {
-                    for (var i = 0; i < slides.length; i++) {
-                        slides[i].style.display = "none";
-                    }
-                    slides[index].style.display = "block";
-                }
-
-                function nextSlide() {
-                    currentIndex = (currentIndex + 1) % slides.length;
-                    showSlide(currentIndex);
-                }
-
-                showSlide(currentIndex);
-                setInterval(nextSlide, 3000); // Change slide every 3 seconds
-            }
-        });
-    </script>';
-
-    // Include some basic styles for the carousel
-    $output .= '<style>
-        .gallery-carousel {
-            display: flex;
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .carousel-slide {
-            display: none;
-            flex-shrink: 0;
-            width: 100%;
-        }
-        .carousel-slide img {
-            width: 100%;
-            display: block;
-        }
-    </style>';
-
     return $output;
 }
 add_shortcode('gallery_carousel', 'display_gallery_carousel');
