@@ -35,7 +35,7 @@ gulp.task('scripts', function () {
 // Watch for changes and reload the browser
 gulp.task('watch', function () {
   browserSync.init({
-    proxy: "http://localhost/wordpress",
+    proxy: "https://localhost/wordpress",
     notify: false
   });
 

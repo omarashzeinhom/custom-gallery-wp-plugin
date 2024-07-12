@@ -5,4 +5,4 @@ const server = livereload.createServer({
 
 server.watch(__dirname);
 
-console.log(`🔥 Livereload server is watching for changes on port http://localhost:${server.config.port} 🔍`);
+console.log(`🔥 Livereload server is watching for changes on port https://localhost:${server.config.port} 🔍`);
