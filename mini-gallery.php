@@ -408,14 +408,14 @@ function mg_plugin_page() {
 }
 
 function mg_styles() {
-    wp_register_style('main', 'public/css/carousel_minigallery.css' , 1.0);
-    wp_enqueue_style('main', 'public/css/carousel_minigallery.css', 1.0);
+    wp_register_style('main', 'public/css/carousel_minigallery.css' , 1.0, true);
+    wp_enqueue_style('main', 'public/css/carousel_minigallery.css', 1.0, true );
 }
 add_action('admin_head', 'mg_styles');
 
 function mg_js() {
-    wp_register_script('main', 'public/css/main_minigallery.js'. 1.0);
-    wp_enqueue_script('main', 'public/css/carousel_minigallery.js', 1.0);
+    wp_register_script('main', 'public/css/main_minigallery.js', 1.0, true);
+    wp_enqueue_script('main', 'public/css/carousel_minigallery.js', 1.0, true);
 }
 add_action('admin_head', 'mg_js');
 
