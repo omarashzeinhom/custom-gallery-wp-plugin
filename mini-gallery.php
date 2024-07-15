@@ -155,23 +155,7 @@ register_uninstall_hook(__FILE__, 'mg_plugin_uninstall');
  * 
  *  ****************************************************************************************
  * Guiding principles
- *
- *  Never trust user input.
- *  Escape as late as possible.
- *  Escape everything from untrusted sources (e.g., databases and users), third-parties (e.g., Twitter), etc.
- *  Never assume anything.
- *  Sanitation is okay, but validation/rejection is better.
- * 
- *  Security    @link: https://developer.wordpress.org/apis/security/
- * 
- * From Video 8 To 13 
- * 8  - User Roles
- * 9  - User Capabilties
- * 10 - Menus
- * 11 - Form Uploads
- * 12 - Styling Plugin
- * 13 - Sanitizing and Validating 
- * 
+ * @link: https://developer.wordpress.org/apis/security/
  * **/
 
 
@@ -424,14 +408,14 @@ function mg_plugin_page() {
 }
 
 function mg_styles() {
-    wp_register_style('main', 'public/css/carousel_minigallery.css');
-    wp_enqueue_style('main', 'public/css/carousel_minigallery.css');
+    wp_register_style('main', 'public/css/carousel_minigallery.css' , 1.0);
+    wp_enqueue_style('main', 'public/css/carousel_minigallery.css', 1.0);
 }
 add_action('admin_head', 'mg_styles');
 
 function mg_js() {
-    wp_register_script('main', 'public/css/main_minigallery.js');
-    wp_enqueue_script('main', 'public/css/carousel_minigallery.js');
+    wp_register_script('main', 'public/css/main_minigallery.js'. 1.0);
+    wp_enqueue_script('main', 'public/css/carousel_minigallery.js', 1.0);
 }
 add_action('admin_head', 'mg_js');
 
