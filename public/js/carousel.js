@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Specify the ID of the carousel
-    var carousel = document.getElementById("mg-carousel" );
-    if (carousel) {
+    // Select all carousels on the page
+    var carousels = document.querySelectorAll(".mg-gallery");
+
+    carousels.forEach(function(carousel) {
         var slides = carousel.getElementsByClassName("carousel-slide");
         var currentIndex = 0;
 
@@ -19,5 +20,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
         showSlide(currentIndex);
         setInterval(nextSlide, 3000); // Change slide every 3 seconds
-    }
+    });
 });
