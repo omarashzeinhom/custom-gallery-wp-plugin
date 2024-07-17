@@ -15,7 +15,8 @@ function mg_register_post_type() {
         'public' => true,
         'label' => 'Gallery Image',
         'description' => 'Manage your galleries here',
-        'show_in_rest' => true,
+        'show_in_rest' => false,
+        'show_in_menu'=> false,
         'rest_base' => 'gallery-image',
         'menu_icon' => 'dashicons-format-gallery',
         'has_archive' => true,
@@ -153,7 +154,7 @@ add_action('admin_init', 'mg_capabilities');
 // Admin Menu
 function mg_menu() {
     if (current_user_can('edit_galleryimages')) {
-        add_menu_page('Add New Gallery Image', 'Gallery', 'edit_galleryimages', 'mini-gallery', 'mg_plugin_page', 'dashicons-format-gallery', 6);
+        add_menu_page('Add New Gallery', 'Gallery', 'edit_galleryimages', 'mini-gallery', 'mg_plugin_page', 'dashicons-format-gallery', 6);
     }
 }
 add_action('admin_menu', 'mg_menu');
