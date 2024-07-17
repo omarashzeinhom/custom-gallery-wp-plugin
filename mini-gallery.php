@@ -320,7 +320,7 @@ function mg_gallery_shortcode($atts)
     if ($post_id) {
         $images = get_attached_media('image', $post_id);
         if ($images) {
-            $output .= '<div id="mg-carousel-' . $post_id . '" class="mg-gallery">';
+            $output .= '<div id="mg-carousel" class="mg-gallery">';
             foreach ($images as $image) {
                 $img_url = wp_get_attachment_image_src($image->ID, 'medium');
                 $output .= '<div id="carousel-slide" class="carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" class="carousel-slide-img"></div>';
