@@ -10,6 +10,9 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Register Gallery Post Type
+if (!defined('ABSPATH')) exit;
+
+// Register Gallery Post Type
 function mg_post() {
     $args = array(
         'public' => true,
@@ -44,6 +47,21 @@ function mg_post() {
 }
 add_action('init', 'mg_post');
 
+// Enqueue scripts and styles
+function mg_enqueue_assets() {
+    wp_enqueue_script('mg-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array(), '1.0', true);
+    wp_enqueue_style('mg-styles', plugin_dir_url(__FILE__) . 'public/css/styles.css');
+
+    // Pass post ID to JavaScript
+    if (is_single()) {
+        $post_id = get_the_ID();
+        wp_localize_script('mg-carousel', 'mg_gallery_data', array(
+            'post_id' => $post_id,
+        ));
+    }
+}
+add_action('wp_enqueue_scripts', 'mg_enqueue_assets');
+
 // Activation & Deactivation Hooks
 function mg_plugin_act() {
     mg_post();
@@ -76,29 +94,31 @@ register_uninstall_hook(__FILE__, 'mg_plugin_uninstall');
 
 // Roles
 function marketing_team_role() {
-    add_role(
-        'marketing_team',
-        'Marketing Team',
-        array(
-            'read' => true,
-            'upload_files' => true,
-            'edit_files' => true,
-            'edit_galleryimage' => true,
-            'read_galleryimage' => true,
-            'delete_galleryimage' => true,
-            'edit_galleryimages' => true,
-            'edit_others_galleryimages' => true,
-            'publish_galleryimages' => true,
-            'read_private_galleryimages' => true,
-            'delete_galleryimages' => true,
-            'delete_private_galleryimages' => true,
-            'delete_published_galleryimages' => true,
-            'delete_others_galleryimages' => true,
-            'edit_private_galleryimages' => true,
-            'edit_published_galleryimages' => true,
-            'create_galleryimages' => true,
-        )
-    );
+    if (get_role('marketing_team') === null) {
+        add_role(
+            'marketing_team',
+            'Marketing Team',
+            array(
+                'read' => true,
+                'upload_files' => true,
+                'edit_files' => true,
+                'edit_galleryimage' => true,
+                'read_galleryimage' => true,
+                'delete_galleryimage' => true,
+                'edit_galleryimages' => true,
+                'edit_others_galleryimages' => true,
+                'publish_galleryimages' => true,
+                'read_private_galleryimages' => true,
+                'delete_galleryimages' => true,
+                'delete_private_galleryimages' => true,
+                'delete_published_galleryimages' => true,
+                'delete_others_galleryimages' => true,
+                'edit_private_galleryimages' => true,
+                'edit_published_galleryimages' => true,
+                'create_galleryimages' => true,
+            )
+        );
+    }
 }
 add_action('init', 'marketing_team_role');
 
@@ -186,76 +206,61 @@ function mg_upload() {
     exit;
 }
 add_action('admin_post_mg_upload', 'mg_upload');
+// Enqueue scripts and styles
 
-// Admin Page
 function mg_plugin_page() {
-    echo '<h1>' . esc_html__('Mini Gallery', 'mini-gallery') . '</h1>';
-    echo '<h2>' . esc_html__('Upload New Images', 'mini-gallery') . '</h2>';
+    echo '<h1>Mini Gallery</h1>';
+    
+    // Form to upload new gallery images
+    echo '<h2>Upload New Images</h2>';
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
-    wp_nonce_field('mg_upload_nonce', 'mg_upload_nonce');
     echo '<input type="hidden" name="action" value="mg_upload">';
-    echo '<label for="gallery_images">' . esc_html__('Select Images:', 'mini-gallery') . '</label>';
+    wp_nonce_field('mg_upload_nonce', 'mg_upload_nonce');
+    echo '<label for="gallery_images">Select Images:</label>';
     echo '<input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" required multiple>';
     echo '<br><br>';
-    echo '<label for="image_title">' . esc_html__('Gallery Title:', 'mini-gallery') . '</label>';
+    echo '<label for="image_title">Gallery Title:</label>';
     echo '<input type="text" id="image_title" name="image_title" required>';
     echo '<br><br>';
-    echo '<input type="submit" class="button button-primary" value="' . esc_attr__('Upload Images', 'mini-gallery') . '">';
+    echo '<input type="submit" class="button button-primary" value="Upload Images">';
     echo '</form>';
-    echo '<h2>' . esc_html__('Existing Galleries', 'mini-gallery') . '</h2>';
-    $galleries = get_posts(['post_type' => 'galleryimage', 'numberposts' => -1]);
-    if ($galleries) {
-        foreach ($galleries as $gallery) {
-            $gallery_title = esc_html($gallery->post_title);
-            $gallery_id = intval($gallery->ID);
-            echo '<div>';
-            echo '<h3>' . esc_html($gallery_title) . ' (ID: ' . esc_html($gallery_id) . ')</h3>';
-            echo '<p>' . esc_html__('Shortcode to display this gallery:', 'mini-gallery') . '</p>';
-            echo '<pre>[gallery_carousel id="' . esc_attr($gallery_id) . '"]</pre>';
-            echo do_shortcode('[gallery_carousel id="' . esc_attr($gallery_id) . '"]');
-            echo '</div>';
-            echo '<hr>';
+
+    // Display existing galleries with their IDs and shortcodes
+    echo '<h2>Existing Galleries</h2>';
+    $galleries = new WP_Query(['post_type' => 'galleryimage']);
+    if ($galleries->have_posts()) {
+        echo '<ul>';
+        while ($galleries->have_posts()) {
+            $galleries->the_post();
+            echo '<li>' . get_the_title() . ' (ID: ' . get_the_ID() . ') - Shortcode: [mg_gallery id="' . get_the_ID() . '"]</li>';
         }
+        echo '</ul>';
     } else {
-        echo '<p>' . esc_html__('No galleries found.', 'mini-gallery') . '</p>';
+        echo '<p>No galleries found.</p>';
     }
+    wp_reset_postdata();
 }
 
-// Enqueue Styles and Scripts
-function mg_enqueue_scripts($hook_suffix) {
-    // Only enqueue on your plugin page
-    if ($hook_suffix === 'toplevel_page_mini-gallery') {
-        wp_enqueue_style('mg-styles', plugin_dir_url(__FILE__) . 'style.css');
-        wp_enqueue_script('mg-scripts', plugin_dir_url(__FILE__) . 'script.js', array('jquery'), false, true);
-    }
-}
-add_action('admin_enqueue_scripts', 'mg_enqueue_scripts');
-// Shortcode
-// Enqueue Styles for Front-End
-function mg_frontend_styles() {
-    wp_enqueue_style('mg-styles', plugin_dir_url(__FILE__) . 'style.css');
-}
-add_action('wp_enqueue_scripts', 'mg_frontend_styles');
-
-// Shortcode
+// Shortcode to display gallery
 function mg_gallery_shortcode($atts) {
-    $atts = shortcode_atts(['id' => ''], $atts, 'gallery_carousel');
-    $gallery_id = intval($atts['id']);
-    if ($gallery_id) {
-        $attachments = get_attached_media('image', $gallery_id);
-        if ($attachments) {
-            wp_enqueue_style('mg-styles'); // Ensure styles are enqueued on shortcode execution
-            $output = '<div class="mg-gallery">';
-            foreach ($attachments as $attachment) {
-                $image_url = wp_get_attachment_url($attachment->ID);
-                $output .= '<div class="mg-gallery-item">';
-                $output .= '<img src="' . esc_url($image_url) . '" alt="">';
-                $output .= '</div>';
+    $atts = shortcode_atts(['id' => ''], $atts);
+    $post_id = intval($atts['id']);
+    $output = '';
+    if ($post_id) {
+        $images = get_attached_media('image', $post_id);
+        if ($images) {
+            $output .= '<div id="gallery-carousel-' . $post_id . '" class="mg-gallery">';
+            foreach ($images as $image) {
+                $img_url = wp_get_attachment_image_src($image->ID, 'medium');
+                $output .= '<div class="carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '"></div>';
             }
             $output .= '</div>';
-            return $output;
+        } else {
+            $output .= '<p>No images found for this gallery.</p>';
         }
+    } else {
+        $output .= '<p>Invalid gallery ID.</p>';
     }
-    return '<p>' . esc_html__('Gallery not found.', 'mini-gallery') . '</p>';
+    return $output;
 }
-add_shortcode('gallery_carousel', 'mg_gallery_shortcode');
+add_shortcode('mg_gallery', 'mg_gallery_shortcode');

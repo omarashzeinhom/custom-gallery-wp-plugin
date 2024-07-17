@@ -2,7 +2,7 @@
 Contributors: @omarashzeinhom
 Tags: gallery, lite
 Requires at least: 6.0
-Tested up to: 6.5.6
+Tested up to: 6.6.6
 Stable tag: 1.0
 Requires PHP: 8.0
 License: GPLv2 or later
