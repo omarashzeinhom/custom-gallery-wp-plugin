@@ -47,41 +47,41 @@ function mg_post()
 add_action('init', 'mg_post');
 
 
-// Enqueue front-end and admin scripts and styles
-// Enqueue front-end and admin scripts and styles
+// Enqueue front-end scripts and styles
 function mg_enqueue_assets()
 {
     // Register scripts and styles
-    wp_register_script('mg-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array('jquery'), '1.0', true);
+    wp_register_script('mg-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array(), '1.0', true);
     wp_register_style('mg-styles', plugin_dir_url(__FILE__) . 'public/css/styles.css', array(), '1.0');
+
+    // Enqueue for front-end only
+    if (!is_admin()) {
+        wp_enqueue_script('mg-carousel');
+        wp_enqueue_style('mg-styles');
+    }
+}
+
+function mg_enqueue_admin_assets()
+{
+    // Register scripts and styles
+    wp_register_script('mg-admin-carousel', plugin_dir_url(__FILE__) . 'public/admin/js/mg-scripts.js', array('jquery'), '1.0', true);
+    wp_register_style('mg-admin-styles', plugin_dir_url(__FILE__) . 'public/admin/css/mg-styles.css', array(), '1.0');
 
     // Enqueue for admin pages
     if (is_admin()) {
-        wp_enqueue_script('mg-carousel');
-        wp_enqueue_style('mg-styles');
+        wp_enqueue_script('mg-admin-carousel');
+        wp_enqueue_style('mg-admin-styles');
     } else {
-        // Enqueue for front-end
-        wp_enqueue_script('mg-carousel');
-        wp_enqueue_style('mg-styles');
-
-        // Pass post ID to JavaScript only on single post pages
-        if (is_single()) {
-            $post_id = get_the_ID();
-            wp_localize_script('mg-carousel', 'mg_gallery_data', array(
-                'post_id' => $post_id,
-            ));
-        }
         if (!is_admin() && is_single()) {
             $post_id = get_the_ID();
-            wp_localize_script('mg-carousel', 'mg_gallery_data', array(
+            wp_localize_script('mg-admin-carousel', 'mg_gallery_data', array(
                 'post_id' => $post_id,
             ));
         }
     }
 }
-add_action('wp_enqueue_scripts', 'mg_enqueue_assets');
-add_action('admin_enqueue_scripts', 'mg_enqueue_assets');
-add_action('admin_head', 'mg_enqueue_assets');
+add_action('admin_enqueue_scripts', 'mg_enqueue_admin_assets');
+//add_action('admin_head', 'mg_enqueue_admin_assets');
 
 
 
