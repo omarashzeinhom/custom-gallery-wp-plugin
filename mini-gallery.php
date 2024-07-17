@@ -10,6 +10,22 @@ Author: Omar Ashraf Zeinhom AbdElRahman | ANDGOEDU
 License: GPLv2 
 */
 if ( ! defined( 'ABSPATH' ) ) exit;
+
+function mg_styles() {
+    wp_register_style('carousel_mg.css', './public/css/mg_alpha.css' , 1.0, true);
+    wp_enqueue_style('main', './public/css/mg_alpha.css', 1.0, true );
+    wp_register_style('carousel_mg.css', './public/css/mg_bravo.css' , 1.0, true);
+    wp_enqueue_style('main', './public/css/mg_bravo.css', 1.0, true );
+}
+add_action('admin_head', 'mg_styles');
+
+function mg_js() {
+    wp_register_script('main', 'public/js/mg_scripts.js', 1.0, true, true);
+    wp_enqueue_script('main', 'public/js/mg_scripts.js', 1.0, true, true);
+}
+add_action('admin_head', 'mg_js');
+
+
 /*
  *  ****************************************************************************************
  *  .______        ___           _______. __    ______     _______.
@@ -407,17 +423,6 @@ function mg_plugin_page() {
     }
 }
 
-function mg_styles() {
-    wp_register_style('main', 'public/css/carousel_minigallery.css' , 1.0, true);
-    wp_enqueue_style('main', 'public/css/carousel_minigallery.css', 1.0, true );
-}
-add_action('admin_head', 'mg_styles');
-
-function mg_js() {
-    wp_register_script('main', 'public/css/main_minigallery.js', 1.0, true);
-    wp_enqueue_script('main', 'public/css/carousel_minigallery.js', 1.0, true);
-}
-add_action('admin_head', 'mg_js');
 
 
 function mg_carousel_shortcode($atts) {
