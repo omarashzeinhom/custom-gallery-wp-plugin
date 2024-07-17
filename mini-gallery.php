@@ -48,20 +48,41 @@ add_action('init', 'mg_post');
 
 
 // Enqueue front-end and admin scripts and styles
+// Enqueue front-end and admin scripts and styles
 function mg_enqueue_assets()
 {
-    wp_enqueue_script('mg-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array('jquery'), '1.0', true);
-    wp_enqueue_style('mg-styles', plugin_dir_url(__FILE__) . 'public/css/styles.css');
+    // Register scripts and styles
+    wp_register_script('mg-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array('jquery'), '1.0', true);
+    wp_register_style('mg-styles', plugin_dir_url(__FILE__) . 'public/css/styles.css', array(), '1.0');
 
-    // Pass post ID to JavaScript only on single post pages
+    // Enqueue for admin pages
+    if (is_admin()) {
+        wp_enqueue_script('mg-carousel');
+        wp_enqueue_style('mg-styles');
+    } else {
+        // Enqueue for front-end
+        wp_enqueue_script('mg-carousel');
+        wp_enqueue_style('mg-styles');
 
-    $post_id = get_the_ID();
-    wp_localize_script('mg-carousel', 'mg_gallery_data', array(
-        'post_id' => $post_id,
-    ));
+        // Pass post ID to JavaScript only on single post pages
+        if (is_single()) {
+            $post_id = get_the_ID();
+            wp_localize_script('mg-carousel', 'mg_gallery_data', array(
+                'post_id' => $post_id,
+            ));
+        }
+        if (!is_admin() && is_single()) {
+            $post_id = get_the_ID();
+            wp_localize_script('mg-carousel', 'mg_gallery_data', array(
+                'post_id' => $post_id,
+            ));
+        }
+    }
 }
 add_action('wp_enqueue_scripts', 'mg_enqueue_assets');
 add_action('admin_enqueue_scripts', 'mg_enqueue_assets');
+add_action('admin_head', 'mg_enqueue_assets');
+
 
 
 // Activation & Deactivation Hooks
@@ -225,7 +246,7 @@ function mg_plugin_page()
     echo '<h2>Upload New Images</h2>';
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
     echo '<input type="hidden" name="action" value="mg_upload">';
-    echo '<input type="hidden" name="mg_upload_nonce" value="' . wp_create_nonce('mg_upload_nonce') . '">';
+    echo '<input type="hidden" name="mg_upload_nonce" value="' . esc_attr(wp_create_nonce('mg_upload_nonce')) . '">';
     echo '<label for="gallery_images">Select Images:</label>';
     echo '<input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" required multiple>';
     echo '<br><br>';
@@ -241,14 +262,14 @@ function mg_plugin_page()
     if ($galleries) {
         foreach ($galleries as $gallery) {
             echo '<div>';
-            echo '<h3 class="text-center">' . esc_html($gallery->post_title) . ' (ID: ' . $gallery->ID . ')</h3>';
+            echo '<h3 class="text-center">' . esc_html($gallery->post_title) . ' (ID: ' . esc_html($gallery->ID) . ')</h3>';
             echo '<p>' . esc_html($gallery->post_content) . '</p>';
             // Optionally, display the carousel preview using the shortcode
             echo do_shortcode('[mg_gallery id="' . $gallery->ID . '"]');
             echo '<hr>';
             // Display the shortcode dynamically with the post ID
-            echo '<p>Shortcode to display this gallery:</p>';
-            echo '<pre>[mg_gallery id="' . $gallery->ID . '"]</pre>';
+            echo '<p>' . esc_html__('Shortcode to display this gallery:', 'your-text-domain') . '</p>';
+            echo '<pre>' . esc_html('[mg_gallery id="' . $gallery->ID . '"]') . '</pre>';
             echo '</div>';
             echo '<hr>';
         }
@@ -267,10 +288,10 @@ function mg_gallery_shortcode($atts)
     if ($post_id) {
         $images = get_attached_media('image', $post_id);
         if ($images) {
-            $output .= '<div id="gallery-carousel-' . $post_id . '" class="mg-gallery">';
+            $output .= '<div id="mg-carousel-' . $post_id . '" class="mg-gallery">';
             foreach ($images as $image) {
                 $img_url = wp_get_attachment_image_src($image->ID, 'medium');
-                $output .= '<div class="carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '"></div>';
+                $output .= '<div id="carousel-slide" class="carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" class="carousel-slide-img"></div>';
             }
             $output .= '</div>';
         } else {

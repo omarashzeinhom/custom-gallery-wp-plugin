@@ -1,7 +1,8 @@
+
 document.addEventListener("DOMContentLoaded", function() {
-    if (typeof mg_gallery_data !== 'undefined') {
-        var post_id = mg_gallery_data.post_id;
-        var carousel = document.getElementById("gallery-carousel-" + post_id);
+    // Check if mg_gallery_data is defined
+{
+        var carousel = document.getElementById("mg-carousel-");
         if (carousel) {
             var slides = carousel.getElementsByClassName("carousel-slide");
             var currentIndex = 0;
