@@ -163,10 +163,18 @@ function mg_capabilities()
             $role->add_cap('edit_others_galleryimages');
             $role->add_cap('publish_galleryimages');
             $role->add_cap('read_private_galleryimages');
+            $role->add_cap('delete_galleryimages');
+            $role->add_cap('delete_private_galleryimages');
+            $role->add_cap('delete_published_galleryimages');
+            $role->add_cap('delete_others_galleryimages');
+            $role->add_cap('edit_private_galleryimages');
+            $role->add_cap('edit_published_galleryimages');
+            $role->add_cap('create_galleryimages');
         }
     }
 }
 add_action('admin_init', 'mg_capabilities');
+
 
 // Admin Menu
 function mg_menu()
@@ -237,7 +245,28 @@ function mg_upload()
 }
 add_action('admin_post_mg_upload', 'mg_upload');
 // Enqueue scripts and styles
+// Handle Gallery Deletion
+function mg_delete_gallery()
+{
+    if (!isset($_GET['gallery_id']) || !isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'mg_delete_gallery')) {
+        wp_die('Security check failed');
+    }
 
+    $gallery_id = intval($_GET['gallery_id']);
+    
+    // Check if the user has the capability to delete the gallery
+    if (!current_user_can('delete_galleryimage', $gallery_id)) {
+        wp_die('You do not have permission to delete this gallery');
+    }
+
+    // Delete the gallery
+    wp_delete_post($gallery_id, true);
+
+    // Redirect back to the gallery management page
+    wp_redirect(admin_url('admin.php?page=mini-gallery'));
+    exit;
+}
+add_action('admin_post_mg_delete_gallery', 'mg_delete_gallery');
 function mg_plugin_page()
 {
     echo '<h1>Mini Gallery</h1>';
@@ -268,8 +297,11 @@ function mg_plugin_page()
             echo do_shortcode('[mg_gallery id="' . $gallery->ID . '"]');
             echo '<hr>';
             // Display the shortcode dynamically with the post ID
-            echo '<p>' . esc_html__('Shortcode to display this gallery:', 'your-text-domain') . '</p>';
+            echo '<p>' . esc_html__('Shortcode to display this gallery:', 'mini-gallery') . '</p>';
             echo '<pre>' . esc_html('[mg_gallery id="' . $gallery->ID . '"]') . '</pre>';
+            // Add delete link
+            $delete_url = wp_nonce_url(admin_url('admin-post.php?action=mg_delete_gallery&gallery_id=' . $gallery->ID), 'mg_delete_gallery');
+            echo '<p><a href="' . esc_url($delete_url) . '" class="button button-secondary">' . esc_html__('Delete Gallery', 'mini-gallery') . '</a></p>';
             echo '</div>';
             echo '<hr>';
         }
