@@ -323,7 +323,7 @@ function mg_gallery_shortcode($atts)
             $output .= '<div id="mg-carousel" class="mg-gallery">';
             foreach ($images as $image) {
                 $img_url = wp_get_attachment_image_src($image->ID, 'medium');
-                $output .= '<div id="carousel-slide" class="carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" class="carousel-slide-img"></div>';
+                $output .= '<div id="carousel-slide" class="carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" class="carousel-slide-img" loading="lazy"></div>';
             }
             $output .= '</div>';
         } else {
