@@ -28,6 +28,7 @@
 .mg-gallery .carousel-slide  img {
     border: 1px solid #ccc;
     padding: 5px;
+    width: 100%;
     background: #f9f9f9;
     opacity: 0.9;
     transition: 0.2s ease-in-out;
@@ -49,9 +50,5 @@
     text-decoration: underline;
 }
 
-
-.mg-gallery .carousel-slide img {
-    width: 100%;
-}
 
 
