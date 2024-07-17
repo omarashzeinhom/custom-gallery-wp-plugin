@@ -3,13 +3,11 @@
     flex-wrap: wrap;
     gap: 20px;
 }
-
 .gallery-image {
     text-align: center;
     width: 150px;
     margin-bottom: 20px;
 }
-
 .gallery-image img {
     border: 1px solid #ccc;
     padding: 5px;
@@ -18,25 +16,20 @@
     transition: 0.2s ease-in-out;
     box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem gray;
 }
-
 .gallery-image img:hover {
     opacity: 1;
     box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem black;
 }
-
 .gallery-image p {
     margin: 5px 0;
 }
-
 .gallery-image a {
     color: #0073aa;
     text-decoration: none;
 }
-
 .gallery-image a:hover {
     text-decoration: underline;
 }
-
 .gallery-carousel {
     display: flex;
     overflow: hidden;
@@ -45,13 +38,11 @@
     max-width: 600px;
     margin: 0 auto;
 }
-
 .carousel-slide {
     display: none;
     flex-shrink: 0;
     width: 100%;
 }
-
 .carousel-slide img {
     width: 100%;
     display: block;

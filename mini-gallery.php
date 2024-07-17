@@ -47,20 +47,23 @@ function mg_post() {
 }
 add_action('init', 'mg_post');
 
-// Enqueue scripts and styles
+
+// Enqueue front-end and admin scripts and styles
 function mg_enqueue_assets() {
-    wp_enqueue_script('mg-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array(), '1.0', true);
+    wp_enqueue_script('mg-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array('jquery'), '1.0', true);
     wp_enqueue_style('mg-styles', plugin_dir_url(__FILE__) . 'public/css/styles.css');
 
-    // Pass post ID to JavaScript
-    if (is_single()) {
+    // Pass post ID to JavaScript only on single post pages
+
         $post_id = get_the_ID();
         wp_localize_script('mg-carousel', 'mg_gallery_data', array(
             'post_id' => $post_id,
         ));
-    }
+  
 }
 add_action('wp_enqueue_scripts', 'mg_enqueue_assets');
+add_action('admin_enqueue_scripts', 'mg_enqueue_assets');
+
 
 // Activation & Deactivation Hooks
 function mg_plugin_act() {
@@ -215,7 +218,7 @@ function mg_plugin_page() {
     echo '<h2>Upload New Images</h2>';
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
     echo '<input type="hidden" name="action" value="mg_upload">';
-    wp_nonce_field('mg_upload_nonce', 'mg_upload_nonce');
+    echo '<input type="hidden" name="mg_upload_nonce" value="' . wp_create_nonce('mg_upload_nonce') . '">';
     echo '<label for="gallery_images">Select Images:</label>';
     echo '<input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" required multiple>';
     echo '<br><br>';
@@ -227,19 +230,27 @@ function mg_plugin_page() {
 
     // Display existing galleries with their IDs and shortcodes
     echo '<h2>Existing Galleries</h2>';
-    $galleries = new WP_Query(['post_type' => 'galleryimage']);
-    if ($galleries->have_posts()) {
-        echo '<ul>';
-        while ($galleries->have_posts()) {
-            $galleries->the_post();
-            echo '<li>' . get_the_title() . ' (ID: ' . get_the_ID() . ') - Shortcode: [mg_gallery id="' . get_the_ID() . '"]</li>';
+    $galleries = get_posts(['post_type' => 'galleryimage', 'numberposts' => -1]);
+    if ($galleries) {
+        foreach ($galleries as $gallery) {
+            echo '<div>';
+            echo '<h3>' . esc_html($gallery->post_title) . ' (ID: ' . $gallery->ID . ')</h3>';
+            echo '<p>' . esc_html($gallery->post_content) . '</p>';
+
+            // Display the shortcode dynamically with the post ID
+            echo '<p>Shortcode to display this gallery:</p>';
+            echo '<pre>[mg_gallery id="' . $gallery->ID . '"]</pre>';
+
+            // Optionally, display the carousel preview using the shortcode
+            echo do_shortcode('[mg_gallery id="' . $gallery->ID . '"]');
+            echo '</div>';
+            echo '<hr>';
         }
-        echo '</ul>';
     } else {
         echo '<p>No galleries found.</p>';
     }
-    wp_reset_postdata();
 }
+
 
 // Shortcode to display gallery
 function mg_gallery_shortcode($atts) {
