@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: Mini Gallery
  * Description: A WordPress plugin to display a simple custom gallery.
@@ -7,13 +8,11 @@
  * License: GPLv2 
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
-
-// Register Gallery Post Type
 if (!defined('ABSPATH')) exit;
 
 // Register Gallery Post Type
-function mg_post() {
+function mg_post()
+{
     $args = array(
         'public' => true,
         'label' => 'Gallery Image',
@@ -49,24 +48,25 @@ add_action('init', 'mg_post');
 
 
 // Enqueue front-end and admin scripts and styles
-function mg_enqueue_assets() {
+function mg_enqueue_assets()
+{
     wp_enqueue_script('mg-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array('jquery'), '1.0', true);
     wp_enqueue_style('mg-styles', plugin_dir_url(__FILE__) . 'public/css/styles.css');
 
     // Pass post ID to JavaScript only on single post pages
 
-        $post_id = get_the_ID();
-        wp_localize_script('mg-carousel', 'mg_gallery_data', array(
-            'post_id' => $post_id,
-        ));
-  
+    $post_id = get_the_ID();
+    wp_localize_script('mg-carousel', 'mg_gallery_data', array(
+        'post_id' => $post_id,
+    ));
 }
 add_action('wp_enqueue_scripts', 'mg_enqueue_assets');
 add_action('admin_enqueue_scripts', 'mg_enqueue_assets');
 
 
 // Activation & Deactivation Hooks
-function mg_plugin_act() {
+function mg_plugin_act()
+{
     mg_post();
     marketing_team_role();
     mg_capabilities();
@@ -74,7 +74,8 @@ function mg_plugin_act() {
 }
 register_activation_hook(__FILE__, 'mg_plugin_act');
 
-function mg_plugin_deact() {
+function mg_plugin_deact()
+{
     unregister_post_type('galleryimage');
     remove_role('marketing_team');
     flush_rewrite_rules();
@@ -82,7 +83,8 @@ function mg_plugin_deact() {
 register_deactivation_hook(__FILE__, 'mg_plugin_deact');
 
 // Uninstall Hook
-function mg_plugin_uninstall() {
+function mg_plugin_uninstall()
+{
     $gallery_images = get_posts(array(
         'post_type' => 'galleryimage',
         'numberposts' => -1,
@@ -96,7 +98,8 @@ function mg_plugin_uninstall() {
 register_uninstall_hook(__FILE__, 'mg_plugin_uninstall');
 
 // Roles
-function marketing_team_role() {
+function marketing_team_role()
+{
     if (get_role('marketing_team') === null) {
         add_role(
             'marketing_team',
@@ -126,7 +129,8 @@ function marketing_team_role() {
 add_action('init', 'marketing_team_role');
 
 // Capabilities
-function mg_capabilities() {
+function mg_capabilities()
+{
     $roles = ['administrator', 'marketing_team'];
     foreach ($roles as $role_name) {
         $role = get_role($role_name);
@@ -144,7 +148,8 @@ function mg_capabilities() {
 add_action('admin_init', 'mg_capabilities');
 
 // Admin Menu
-function mg_menu() {
+function mg_menu()
+{
     if (current_user_can('edit_galleryimages')) {
         add_menu_page(
             'Add New Gallery Image',
@@ -160,7 +165,8 @@ function mg_menu() {
 add_action('admin_menu', 'mg_menu');
 
 // Handle File Uploads
-function mg_upload() {
+function mg_upload()
+{
     if (!isset($_POST['mg_upload_nonce']) || !wp_verify_nonce($_POST['mg_upload_nonce'], 'mg_upload_nonce')) {
         wp_die('Security check');
     }
@@ -211,9 +217,10 @@ function mg_upload() {
 add_action('admin_post_mg_upload', 'mg_upload');
 // Enqueue scripts and styles
 
-function mg_plugin_page() {
+function mg_plugin_page()
+{
     echo '<h1>Mini Gallery</h1>';
-    
+
     // Form to upload new gallery images
     echo '<h2>Upload New Images</h2>';
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
@@ -234,15 +241,14 @@ function mg_plugin_page() {
     if ($galleries) {
         foreach ($galleries as $gallery) {
             echo '<div>';
-            echo '<h3>' . esc_html($gallery->post_title) . ' (ID: ' . $gallery->ID . ')</h3>';
+            echo '<h3 class="text-center">' . esc_html($gallery->post_title) . ' (ID: ' . $gallery->ID . ')</h3>';
             echo '<p>' . esc_html($gallery->post_content) . '</p>';
-
+            // Optionally, display the carousel preview using the shortcode
+            echo do_shortcode('[mg_gallery id="' . $gallery->ID . '"]');
+            echo '<hr>';
             // Display the shortcode dynamically with the post ID
             echo '<p>Shortcode to display this gallery:</p>';
             echo '<pre>[mg_gallery id="' . $gallery->ID . '"]</pre>';
-
-            // Optionally, display the carousel preview using the shortcode
-            echo do_shortcode('[mg_gallery id="' . $gallery->ID . '"]');
             echo '</div>';
             echo '<hr>';
         }
@@ -253,7 +259,8 @@ function mg_plugin_page() {
 
 
 // Shortcode to display gallery
-function mg_gallery_shortcode($atts) {
+function mg_gallery_shortcode($atts)
+{
     $atts = shortcode_atts(['id' => ''], $atts);
     $post_id = intval($atts['id']);
     $output = '';

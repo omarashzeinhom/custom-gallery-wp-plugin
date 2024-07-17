@@ -1,14 +1,23 @@
-.gallery-images {
+.text-center{
+    text-align: center;
+}
+
+.mg-gallery {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
 }
-.gallery-image {
+.mg-gallery .carousel-slide  {
     text-align: center;
-    width: 150px;
+    width: 100%;
     margin-bottom: 20px;
+    max-width: 250px;
+    max-height: 250px;
 }
-.gallery-image img {
+.mg-gallery .carousel-slide  img {
     border: 1px solid #ccc;
     padding: 5px;
     background: #f9f9f9;
@@ -16,21 +25,21 @@
     transition: 0.2s ease-in-out;
     box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem gray;
 }
-.gallery-image img:hover {
+.mg-gallery .carousel-slide  img:hover {
     opacity: 1;
     box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem black;
 }
-.gallery-image p {
+.mg-gallery .carousel-slide  p {
     margin: 5px 0;
 }
-.gallery-image a {
+.mg-gallery .carousel-slide  a {
     color: #0073aa;
     text-decoration: none;
 }
-.gallery-image a:hover {
+.mg-gallery .carousel-slide  a:hover {
     text-decoration: underline;
 }
-.gallery-carousel {
+.mg-gallery {
     display: flex;
     overflow: hidden;
     position: relative;
@@ -38,20 +47,18 @@
     max-width: 600px;
     margin: 0 auto;
 }
-.carousel-slide {
+.mg-gallery .carousel-slide {
     display: none;
     flex-shrink: 0;
     width: 100%;
 }
-.carousel-slide img {
+.mg-gallery .carousel-slide img {
     width: 100%;
-    display: block;
-}
-
-.mg-gallery .carousel-slide {
-    display: none; /* Ensure slides are hidden by default */
 }
 
 .mg-gallery .carousel-slide:first-child {
+    display: block; /* Display the first slide initially */
+}
+.mg-gallery .carousel-slide:second-child {
     display: block; /* Display the first slide initially */
 }
