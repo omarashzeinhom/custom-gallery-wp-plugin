@@ -12,18 +12,20 @@ License: GPLv2
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 function mg_styles() {
-    wp_register_style('carousel_mg.css', './public/css/mg_alpha.css' , 1.0, true);
-    wp_enqueue_style('main', './public/css/mg_alpha.css', 1.0, true );
-    wp_register_style('carousel_mg.css', './public/css/mg_bravo.css' , 1.0, true);
-    wp_enqueue_style('main', './public/css/mg_bravo.css', 1.0, true );
+    wp_register_style('mg_alpha', get_template_directory_uri() . '/public/css/mg_alpha.css', array(), '1.0', 'all');
+    wp_enqueue_style('mg_alpha');
+
+    wp_register_style('mg_bravo', get_template_directory_uri() . '/public/css/mg_bravo.css', array(), '1.0', 'all');
+    wp_enqueue_style('mg_bravo');
 }
-add_action('admin_head', 'mg_styles');
+add_action('wp_enqueue_scripts', 'mg_styles');
 
 function mg_js() {
-    wp_register_script('main', 'public/js/mg_scripts.js', 1.0, true, true);
-    wp_enqueue_script('main', 'public/js/mg_scripts.js', 1.0, true, true);
+    wp_register_script('mg_scripts', get_template_directory_uri() . '/public/js/mg_scripts.js', array(), '1.0', true);
+    wp_enqueue_script('mg_scripts');
 }
-add_action('admin_head', 'mg_js');
+add_action('wp_enqueue_scripts', 'mg_js');
+
 
 
 /*
