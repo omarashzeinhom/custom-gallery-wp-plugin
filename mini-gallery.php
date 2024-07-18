@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: Mini Gallery
  * Description: A WordPress plugin to display a simple custom gallery.
@@ -10,13 +11,14 @@
 if (!defined('ABSPATH')) exit;
 
 // Unique prefix for all functions and hooks
-function mg_register_post_type() {
+function mg_register_post_type()
+{
     $args = array(
         'public' => true,
         'label' => 'Gallery Image',
         'description' => 'Manage your galleries here',
         'show_in_rest' => false,
-        'show_in_menu'=> false,
+        'show_in_menu' => false,
         'rest_base' => 'gallery-image',
         'menu_icon' => 'dashicons-format-gallery',
         'has_archive' => true,
@@ -45,7 +47,8 @@ function mg_register_post_type() {
 add_action('init', 'mg_register_post_type');
 
 // Enqueue front-end scripts and styles
-function mg_enqueue_assets() {
+function mg_enqueue_assets()
+{
     // Register scripts and styles
     wp_register_script('mg-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array(), '1.0', true);
     wp_register_style('mg-styles', plugin_dir_url(__FILE__) . 'public/css/styles.css', array(), '1.0');
@@ -59,7 +62,8 @@ function mg_enqueue_assets() {
 add_action('wp_enqueue_scripts', 'mg_enqueue_assets');
 
 // Enqueue admin assets
-function mg_enqueue_admin_assets() {
+function mg_enqueue_admin_assets()
+{
     // Register scripts and styles
     wp_register_script('mg-admin-carousel', plugin_dir_url(__FILE__) . 'public/admin/js/mg-scripts.js', array('jquery'), '1.0', true);
     wp_register_style('mg-admin-styles', plugin_dir_url(__FILE__) . 'public/admin/css/mg-styles.css', array(), '1.0');
@@ -71,7 +75,8 @@ function mg_enqueue_admin_assets() {
 add_action('admin_enqueue_scripts', 'mg_enqueue_admin_assets');
 
 // Activation & Deactivation Hooks
-function mg_plugin_activate() {
+function mg_plugin_activate()
+{
     mg_register_post_type();
     mg_add_marketing_team_role();
     mg_capabilities();
@@ -79,7 +84,8 @@ function mg_plugin_activate() {
 }
 register_activation_hook(__FILE__, 'mg_plugin_activate');
 
-function mg_plugin_deactivate() {
+function mg_plugin_deactivate()
+{
     unregister_post_type('galleryimage');
     remove_role('marketing_team');
     flush_rewrite_rules();
@@ -87,7 +93,8 @@ function mg_plugin_deactivate() {
 register_deactivation_hook(__FILE__, 'mg_plugin_deactivate');
 
 // Uninstall Hook
-function mg_plugin_uninstall() {
+function mg_plugin_uninstall()
+{
     $gallery_images = get_posts(array(
         'post_type' => 'galleryimage',
         'numberposts' => -1,
@@ -101,7 +108,8 @@ function mg_plugin_uninstall() {
 register_uninstall_hook(__FILE__, 'mg_plugin_uninstall');
 
 // Roles
-function mg_add_marketing_team_role() {
+function mg_add_marketing_team_role()
+{
     if (get_role('marketing_team') === null) {
         add_role('marketing_team', 'Marketing Team', array(
             'read' => true,
@@ -127,7 +135,8 @@ function mg_add_marketing_team_role() {
 add_action('init', 'mg_add_marketing_team_role');
 
 // Capabilities
-function mg_capabilities() {
+function mg_capabilities()
+{
     $roles = ['administrator', 'marketing_team'];
     foreach ($roles as $role_name) {
         $role = get_role($role_name);
@@ -152,7 +161,8 @@ function mg_capabilities() {
 add_action('admin_init', 'mg_capabilities');
 
 // Admin Menu
-function mg_menu() {
+function mg_menu()
+{
     if (current_user_can('edit_galleryimages')) {
         add_menu_page('Add New Gallery', 'Gallery', 'edit_galleryimages', 'mini-gallery', 'mg_plugin_page', 'dashicons-format-gallery', 6);
     }
@@ -160,7 +170,8 @@ function mg_menu() {
 add_action('admin_menu', 'mg_menu');
 
 // Handle File Uploads
-function mg_upload() {
+function mg_upload()
+{
     if (!isset($_POST['mg_upload_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mg_upload_nonce'])), 'mg_upload_nonce')) {
         wp_die('Security check');
     }
@@ -222,13 +233,14 @@ function mg_upload() {
 add_action('admin_post_mg_upload', 'mg_upload');
 
 // Handle Gallery Deletion
-function mg_delete_gallery() {
+function mg_delete_gallery()
+{
     if (!isset($_GET['gallery_id']) || !isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'mg_delete_gallery')) {
         wp_die('Security check failed');
     }
 
     $gallery_id = intval($_GET['gallery_id']);
-    
+
     if (!current_user_can('delete_galleryimage', $gallery_id)) {
         wp_die('You do not have permission to delete this gallery');
     }
@@ -240,7 +252,8 @@ function mg_delete_gallery() {
 add_action('admin_post_mg_delete_gallery', 'mg_delete_gallery');
 
 
-function mg_plugin_page() {
+function mg_plugin_page()
+{
     echo '<h1>' . esc_html__('Mini Gallery', 'mini-gallery') . '</h1>';
 
     // Form to upload new gallery images
@@ -248,15 +261,15 @@ function mg_plugin_page() {
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
     echo '<input type="hidden" name="action" value="mg_upload">';
     echo '<input type="hidden" name="mg_upload_nonce" value="' . esc_attr(wp_create_nonce('mg_upload_nonce')) . '">';
-    
+
     echo '<label for="gallery_images">' . esc_html__('Select Images:', 'mini-gallery') . '</label>';
     echo '<input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" required multiple>';
     echo '<br><br>';
-    
+
     echo '<label for="image_title">' . esc_html__('Gallery Title:', 'mini-gallery') . '</label>';
     echo '<input type="text" id="image_title" name="image_title" required>';
     echo '<br><br>';
-    
+
     // Dropdown for gallery type
     echo '<label for="gallery_type">' . esc_html__('Gallery Type:', 'mini-gallery') . '</label>';
     echo '<select id="gallery_type" name="gallery_type" required>';
@@ -265,7 +278,7 @@ function mg_plugin_page() {
     echo '<option value="grid">' . esc_html__('Grid Layout', 'mini-gallery') . '</option>';
     echo '</select>';
     echo '<br><br>';
-    
+
     echo '<input type="submit" class="button button-primary" value="' . esc_attr__('Upload Images', 'mini-gallery') . '">';
     echo '</form>';
 
@@ -300,8 +313,6 @@ function mg_plugin_page() {
 }
 
 
-
-// Shortcode to display gallery
 // Shortcode to display gallery
 function mg_gallery_shortcode($atts)
 {
