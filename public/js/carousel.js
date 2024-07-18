@@ -1,16 +1,41 @@
+// Carousel for Single Gallery
 document.addEventListener("DOMContentLoaded", function() {
-    // Select all carousels on the page
-    var carousels = document.querySelectorAll(".mg-gallery");
+    var singleCarousels = document.querySelectorAll(".mg-gallery-single-carousel");
 
-    carousels.forEach(function(carousel) {
-        var slides = carousel.getElementsByClassName("carousel-slide");
+    singleCarousels.forEach(function(carousel) {
+        var slides = carousel.querySelectorAll(".carousel-slide");
         var currentIndex = 0;
 
         function showSlide(index) {
-            for (var i = 0; i < slides.length; i++) {
-                slides[i].style.display = "none";
-            }
+            slides.forEach(function(slide) {
+                slide.style.display = "none";
+            });
             slides[index].style.display = "block";
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % slides.length;
+            showSlide(currentIndex);
+        }
+
+        showSlide(currentIndex);
+        setInterval(nextSlide, 3000); // Change slide every 3 seconds
+    });
+});
+
+// Carousel for Multi Gallery
+document.addEventListener("DOMContentLoaded", function() {
+    var multiCarousels = document.querySelectorAll(".mg-gallery.multi-carousel");
+
+    multiCarousels.forEach(function(carousel) {
+        var slides = carousel.querySelectorAll(".mg-multi-carousel-slide");
+        var currentIndex = 0;
+
+        function showSlide(index) {
+            slides.forEach(function(slide) {
+                slide.style.display = "flex";
+            });
+            slides[index].style.display = "flex";
         }
 
         function nextSlide() {

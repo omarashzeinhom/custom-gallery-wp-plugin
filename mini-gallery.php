@@ -164,15 +164,23 @@ function mg_upload() {
     if (!isset($_POST['mg_upload_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mg_upload_nonce'])), 'mg_upload_nonce')) {
         wp_die('Security check');
     }
-    if (!empty($_FILES['gallery_images']) && !empty($_POST['image_title'])) {
+
+    if (!empty($_FILES['gallery_images']) && !empty($_POST['image_title']) && !empty($_POST['gallery_type'])) {
         $files = $_FILES['gallery_images'];
         $title = sanitize_text_field($_POST['image_title']);
+        $gallery_type = sanitize_text_field($_POST['gallery_type']); // Get the gallery type
+
+        // Create a new post for the gallery
         $post_id = wp_insert_post(array(
             'post_title' => $title,
             'post_type' => 'galleryimage',
             'post_status' => 'publish'
         ));
+
         if ($post_id) {
+            // Save the gallery type as post meta
+            update_post_meta($post_id, 'gallery_type', $gallery_type);
+
             foreach ($files['name'] as $key => $value) {
                 if ($files['name'][$key]) {
                     $file = array(
@@ -182,6 +190,7 @@ function mg_upload() {
                         'error' => $files['error'][$key],
                         'size' => $files['size'][$key]
                     );
+
                     $file_type = wp_check_filetype($file['name']);
                     $allowed_types = array('image/jpeg', 'image/jpg', 'image/png', 'image/gif');
                     if (in_array($file_type['type'], $allowed_types)) {
@@ -196,6 +205,7 @@ function mg_upload() {
                                 'post_content' => '',
                                 'post_status' => 'inherit'
                             ), $file_path, $post_id);
+
                             require_once(ABSPATH . 'wp-admin/includes/image.php');
                             $attach_data = wp_generate_attachment_metadata($attachment_id, $file_path);
                             wp_update_attachment_metadata($attachment_id, $attach_data);
@@ -205,6 +215,7 @@ function mg_upload() {
             }
         }
     }
+
     wp_redirect(admin_url('admin.php?page=mini-gallery'));
     exit;
 }
@@ -237,12 +248,24 @@ function mg_plugin_page() {
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
     echo '<input type="hidden" name="action" value="mg_upload">';
     echo '<input type="hidden" name="mg_upload_nonce" value="' . esc_attr(wp_create_nonce('mg_upload_nonce')) . '">';
+    
     echo '<label for="gallery_images">' . esc_html__('Select Images:', 'mini-gallery') . '</label>';
     echo '<input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" required multiple>';
     echo '<br><br>';
+    
     echo '<label for="image_title">' . esc_html__('Gallery Title:', 'mini-gallery') . '</label>';
     echo '<input type="text" id="image_title" name="image_title" required>';
     echo '<br><br>';
+    
+    // Dropdown for gallery type
+    echo '<label for="gallery_type">' . esc_html__('Gallery Type:', 'mini-gallery') . '</label>';
+    echo '<select id="gallery_type" name="gallery_type" required>';
+    echo '<option value="single_carousel">' . esc_html__('Single Carousel', 'mini-gallery') . '</option>';
+    echo '<option value="multi_carousel">' . esc_html__('Multi Carousel', 'mini-gallery') . '</option>';
+    echo '<option value="grid">' . esc_html__('Grid Layout', 'mini-gallery') . '</option>';
+    echo '</select>';
+    echo '<br><br>';
+    
     echo '<input type="submit" class="button button-primary" value="' . esc_attr__('Upload Images', 'mini-gallery') . '">';
     echo '</form>';
 
@@ -254,6 +277,11 @@ function mg_plugin_page() {
             echo '<div>';
             echo '<h3 class="text-center">' . esc_html($gallery->post_title) . ' (ID: ' . esc_html($gallery->ID) . ')</h3>';
             echo '<p>' . esc_html($gallery->post_content) . '</p>';
+
+            // Display the gallery type
+            $gallery_type = get_post_meta($gallery->ID, 'gallery_type', true);
+            echo '<p>' . esc_html__('Gallery Type: ', 'mini-gallery') . esc_html(ucfirst($gallery_type)) . '</p>';
+
             // Display the carousel preview using the shortcode
             echo do_shortcode('[mg_gallery id="' . esc_attr($gallery->ID) . '"]');
             echo '<hr>';
@@ -272,31 +300,52 @@ function mg_plugin_page() {
 }
 
 
+
 // Shortcode to display gallery
-function mg_gallery_shortcode($atts) {
+// Shortcode to display gallery
+function mg_gallery_shortcode($atts)
+{
     $atts = shortcode_atts(['id' => ''], $atts);
     $post_id = intval($atts['id']);
     $output = '';
 
     if ($post_id) {
+        // Retrieve the gallery type from post meta
+        $gallery_type = get_post_meta($post_id, 'gallery_type', true);
+        if (!$gallery_type) {
+            $gallery_type = 'single_carousel'; // Fallback to default if not set
+        }
+
         $images = get_attached_media('image', $post_id);
         if ($images) {
-            $output .= '<div id="mg-carousel" class="mg-gallery">';
-            foreach ($images as $image) {
-                $img_url = wp_get_attachment_image_src($image->ID, 'medium');
-                if ($img_url) {
-                    $output .= '<div class="carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" class="carousel-slide-img" loading="lazy"></div>';
+            if ($gallery_type === 'single_carousel') {
+                $output .= '<div id="mg-carousel" class="mg-gallery-single-carousel">';
+                foreach ($images as $image) {
+                    $img_url = wp_get_attachment_image_src($image->ID, 'medium');
+                    $output .= '<div class="carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" loading="lazy"></div>';
                 }
+                $output .= '</div>';
+            } elseif ($gallery_type === 'multi_carousel') {
+                $output .= '<div id="mg-multi-carousel" class="mg-gallery multi-carousel">';
+                foreach ($images as $image) {
+                    $img_url = wp_get_attachment_image_src($image->ID, 'medium');
+                    $output .= '<div class="mg-multi-carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" loading="lazy"></div>';
+                }
+                $output .= '</div>';
+            } elseif ($gallery_type === 'grid') {
+                $output .= '<div class="grid-layout">';
+                foreach ($images as $image) {
+                    $img_url = wp_get_attachment_image_src($image->ID, 'medium');
+                    $output .= '<div class="grid-item"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" loading="lazy"></div>';
+                }
+                $output .= '</div>';
             }
-            $output .= '</div>';
         } else {
-            $output .= '<p>' . esc_html__('No images found for this gallery.', 'mini-gallery') . '</p>';
+            $output .= '<p>No images found for this gallery.</p>';
         }
     } else {
-        $output .= '<p>' . esc_html__('Invalid gallery ID.', 'mini-gallery') . '</p>';
+        $output .= '<p>Invalid gallery ID.</p>';
     }
-
     return $output;
 }
 add_shortcode('mg_gallery', 'mg_gallery_shortcode');
-
