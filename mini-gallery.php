@@ -21,26 +21,26 @@ function mgwpp_register_post_type() {
         'menu_icon' => 'dashicons-format-gallery',
         'has_archive' => true,
         'supports' => array('title', 'editor', 'author', 'thumbnail', 'excerpt'),
-        'capability_type' => 'galleryimage',
+        'capability_type' => 'mgwpp_soora',
         'map_meta_cap' => true,
         'capabilities' => array(
-            'edit_post' => 'edit_galleryimage',
-            'read_post' => 'read_galleryimage',
-            'delete_post' => 'delete_galleryimage',
-            'edit_posts' => 'edit_galleryimages',
-            'edit_others_posts' => 'edit_others_galleryimages',
-            'publish_posts' => 'publish_galleryimages',
-            'read_private_posts' => 'read_private_galleryimages',
-            'delete_posts' => 'delete_galleryimages',
-            'delete_private_posts' => 'delete_private_galleryimages',
-            'delete_published_posts' => 'delete_published_galleryimages',
-            'delete_others_posts' => 'delete_others_galleryimages',
-            'edit_private_posts' => 'edit_private_galleryimages',
-            'edit_published_posts' => 'edit_published_galleryimages',
-            'create_posts' => 'create_galleryimages',
+            'edit_post' => 'edit_mgwpp_soora',
+            'read_post' => 'read_mgwpp_soora',
+            'delete_post' => 'delete_mgwpp_soora',
+            'edit_posts' => 'edit_mgwpp_sooras',
+            'edit_others_posts' => 'edit_others_mgwpp_sooras',
+            'publish_posts' => 'publish_mgwpp_sooras',
+            'read_private_posts' => 'read_private_mgwpp_sooras',
+            'delete_posts' => 'delete_mgwpp_sooras',
+            'delete_private_posts' => 'delete_private_mgwpp_sooras',
+            'delete_published_posts' => 'delete_published_mgwpp_sooras',
+            'delete_others_posts' => 'delete_others_mgwpp_sooras',
+            'edit_private_posts' => 'edit_private_mgwpp_sooras',
+            'edit_published_posts' => 'edit_published_mgwpp_sooras',
+            'create_posts' => 'create_mgwpp_sooras',
         )
     );
-    register_post_type('galleryimage', $args);
+    register_post_type('mgwpp_soora', $args);
 }
 add_action('init', 'mgwpp_register_post_type');
 
@@ -80,7 +80,7 @@ function mgwpp_plugin_activate() {
 register_activation_hook(__FILE__, 'mgwpp_plugin_activate');
 
 function mgwpp_plugin_deactivate() {
-    unregister_post_type('galleryimage');
+    unregister_post_type('mgwpp_soora');
     remove_role('marketing_team');
     flush_rewrite_rules();
 }
@@ -88,12 +88,12 @@ register_deactivation_hook(__FILE__, 'mgwpp_plugin_deactivate');
 
 // Uninstall Hook
 function mgwpp_plugin_uninstall() {
-    $gallery_images = get_posts(array(
-        'post_type' => 'galleryimage',
+    $sowar = get_posts(array(
+        'post_type' => 'mgwpp_soora',
         'numberposts' => -1,
         'post_status' => 'any'
     ));
-    foreach ($gallery_images as $gallery_image) {
+    foreach ($sowar as $gallery_image) {
         wp_delete_post(intval($gallery_image->ID), true);
     }
     remove_role('marketing_team');
@@ -107,20 +107,20 @@ function mgwpp_add_marketing_team_role() {
             'read' => true,
             'upload_files' => true,
             'edit_files' => true,
-            'edit_galleryimage' => true,
-            'read_galleryimage' => true,
-            'delete_galleryimage' => true,
-            'edit_galleryimages' => true,
-            'edit_others_galleryimages' => true,
-            'publish_galleryimages' => true,
-            'read_private_galleryimages' => true,
-            'delete_galleryimages' => true,
-            'delete_private_galleryimages' => true,
-            'delete_published_galleryimages' => true,
-            'delete_others_galleryimages' => true,
-            'edit_private_galleryimages' => true,
-            'edit_published_galleryimages' => true,
-            'create_galleryimages' => true,
+            'edit_mgwpp_soora' => true,
+            'read_mgwpp_soora' => true,
+            'delete_mgwpp_soora' => true,
+            'edit_mgwpp_sooras' => true,
+            'edit_others_mgwpp_sooras' => true,
+            'publish_mgwpp_sooras' => true,
+            'read_private_mgwpp_sooras' => true,
+            'delete_mgwpp_sooras' => true,
+            'delete_private_mgwpp_sooras' => true,
+            'delete_published_mgwpp_sooras' => true,
+            'delete_others_mgwpp_sooras' => true,
+            'edit_private_mgwpp_sooras' => true,
+            'edit_published_mgwpp_sooras' => true,
+            'create_mgwpp_sooras' => true,
         ));
     }
 }
@@ -132,20 +132,20 @@ function mgwpp_capabilities() {
     foreach ($roles as $role_name) {
         $role = get_role($role_name);
         if ($role) {
-            $role->add_cap('edit_galleryimage');
-            $role->add_cap('read_galleryimage');
-            $role->add_cap('delete_galleryimage');
-            $role->add_cap('edit_galleryimages');
-            $role->add_cap('edit_others_galleryimages');
-            $role->add_cap('publish_galleryimages');
-            $role->add_cap('read_private_galleryimages');
-            $role->add_cap('delete_galleryimages');
-            $role->add_cap('delete_private_galleryimages');
-            $role->add_cap('delete_published_galleryimages');
-            $role->add_cap('delete_others_galleryimages');
-            $role->add_cap('edit_private_galleryimages');
-            $role->add_cap('edit_published_galleryimages');
-            $role->add_cap('create_galleryimages');
+            $role->add_cap('edit_mgwpp_soora');
+            $role->add_cap('read_mgwpp_soora');
+            $role->add_cap('delete_mgwpp_soora');
+            $role->add_cap('edit_mgwpp_sooras');
+            $role->add_cap('edit_others_mgwpp_sooras');
+            $role->add_cap('publish_mgwpp_sooras');
+            $role->add_cap('read_private_mgwpp_sooras');
+            $role->add_cap('delete_mgwpp_sooras');
+            $role->add_cap('delete_private_mgwpp_sooras');
+            $role->add_cap('delete_published_mgwpp_sooras');
+            $role->add_cap('delete_others_mgwpp_sooras');
+            $role->add_cap('edit_private_mgwpp_sooras');
+            $role->add_cap('edit_published_mgwpp_sooras');
+            $role->add_cap('create_mgwpp_sooras');
         }
     }
 }
@@ -153,8 +153,8 @@ add_action('admin_init', 'mgwpp_capabilities');
 
 // Admin Menu
 function mgwpp_menu() {
-    if (current_user_can('edit_galleryimages')) {
-        add_menu_page('Add New Gallery', 'Gallery', 'edit_galleryimages', 'mini-gallery', 'mgwpp_plugin_page', 'dashicons-format-gallery', 6);
+    if (current_user_can('edit_mgwpp_sooras')) {
+        add_menu_page('Add New Gallery', 'Gallery', 'edit_mgwpp_sooras', 'mini-gallery', 'mgwpp_plugin_page', 'dashicons-format-gallery', 6);
     }
 }
 add_action('admin_menu', 'mgwpp_menu');
@@ -165,15 +165,15 @@ function mgwpp_upload() {
         wp_die('Security check');
     }
 
-    if (!empty($_FILES['gallery_images']) && !empty($_POST['image_title']) && !empty($_POST['gallery_type'])) {
-        $files = $_FILES['gallery_images'];
+    if (!empty($_FILES['sowar']) && !empty($_POST['image_title']) && !empty($_POST['gallery_type'])) {
+        $files = $_FILES['sowar'];
         $title = sanitize_text_field($_POST['image_title']);
         $gallery_type = sanitize_text_field($_POST['gallery_type']); // Get the gallery type
 
         // Create a new post for the gallery
         $post_id = wp_insert_post(array(
             'post_title' => $title,
-            'post_type' => 'galleryimage',
+            'post_type' => 'mgwpp_soora',
             'post_status' => 'publish'
         ));
 
@@ -229,7 +229,7 @@ function mgwpp_delete_gallery() {
 
     $gallery_id = intval($_GET['gallery_id']);
     
-    if (!current_user_can('delete_galleryimage', $gallery_id)) {
+    if (!current_user_can('delete_mgwpp_soora', $gallery_id)) {
         wp_die('You do not have permission to delete this gallery');
     }
 
@@ -249,8 +249,8 @@ function mgwpp_plugin_page() {
     echo '<input type="hidden" name="action" value="mgwpp_upload">';
     echo '<input type="hidden" name="mgwpp_upload_nonce" value="' . esc_attr(wp_create_nonce('mgwpp_upload_nonce')) . '">';
     
-    echo '<label for="gallery_images">' . esc_html__('Select Images:', 'mini-gallery') . '</label>';
-    echo '<input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" required multiple>';
+    echo '<label for="sowar">' . esc_html__('Select Images:', 'mini-gallery') . '</label>';
+    echo '<input type="file" id="sowar" name="sowar[]" accept="image/*" required multiple>';
     echo '<br><br>';
     
     echo '<label for="image_title">' . esc_html__('Gallery Title:', 'mini-gallery') . '</label>';
@@ -271,7 +271,7 @@ function mgwpp_plugin_page() {
 
     // Display existing galleries with their IDs and shortcodes
     echo '<h2>' . esc_html__('Existing Galleries', 'mini-gallery') . '</h2>';
-    $galleries = get_posts(['post_type' => 'galleryimage', 'numberposts' => -1]);
+    $galleries = get_posts(['post_type' => 'mgwpp_soora', 'numberposts' => -1]);
     if ($galleries) {
         foreach ($galleries as $gallery) {
             echo '<div>';
