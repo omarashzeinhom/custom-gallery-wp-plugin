@@ -17,7 +17,7 @@ function mgwpp_register_post_type() {
         'description' => 'Manage your galleries here',
         'show_in_rest' => false,
         'show_in_menu'=> false,
-        'rest_base' => 'gallery-image',
+        'rest_base' => 'soora-api',
         'menu_icon' => 'dashicons-format-gallery',
         'has_archive' => true,
         'supports' => array('title', 'editor', 'author', 'thumbnail', 'excerpt'),
@@ -154,7 +154,7 @@ add_action('admin_init', 'mgwpp_capabilities');
 // Admin Menu
 function mgwpp_menu() {
     if (current_user_can('edit_mgwpp_sooras')) {
-        add_menu_page('Add New Gallery', 'Gallery', 'edit_mgwpp_sooras', 'mini-gallery', 'mgwpp_plugin_page', 'dashicons-format-gallery', 6);
+        add_menu_page('Add New Mini Gallery', 'Mini Gallery', 'edit_mgwpp_sooras', 'mini-gallery', 'mgwpp_plugin_page', 'dashicons-format-gallery', 6);
     }
 }
 add_action('admin_menu', 'mgwpp_menu');
@@ -167,8 +167,8 @@ function mgwpp_upload() {
 
     if (!empty($_FILES['sowar']) && !empty($_POST['image_title']) && !empty($_POST['gallery_type'])) {
         $files = $_FILES['sowar'];
-        $title = sanitize_text_field($_POST['image_title']);
-        $gallery_type = sanitize_text_field($_POST['gallery_type']); // Get the gallery type
+        $title = wp_kses_post($_POST['image_title']);
+        $gallery_type = wp_kses_post($_POST['gallery_type']); // Sanitize gallery type using wp_kses_post
 
         // Create a new post for the gallery
         $post_id = wp_insert_post(array(
@@ -184,7 +184,7 @@ function mgwpp_upload() {
             foreach ($files['name'] as $key => $value) {
                 if ($files['name'][$key]) {
                     $file = array(
-                        'name' => $files['name'][$key],
+                        'name' => sanitize_file_name($files['name'][$key]), // Sanitize file name
                         'type' => $files['type'][$key],
                         'tmp_name' => $files['tmp_name'][$key],
                         'error' => $files['error'][$key],
@@ -220,6 +220,7 @@ function mgwpp_upload() {
     exit;
 }
 add_action('admin_post_mgwpp_upload', 'mgwpp_upload');
+
 
 // Handle Gallery Deletion
 function mgwpp_delete_gallery() {
