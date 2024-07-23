@@ -24,27 +24,63 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Carousel for Multi Gallery
-// Carousel for Multi Gallery
 document.addEventListener("DOMContentLoaded", function() {
     var multiCarousels = document.querySelectorAll(".mg-gallery.multi-carousel");
 
     multiCarousels.forEach(function(carousel) {
         var slides = carousel.querySelectorAll(".mg-multi-carousel-slide");
         var currentIndex = 0;
+        var imagesPerPage = 6; // Default number of images per page
+        var visibleSlides = [];
 
-        function showSlide(index) {
-            slides.forEach(function(slide) {
-                slide.style.display = "none"; // Hide all slides
+        // Function to update the number of images per page based on screen width
+        function updateImagesPerPage() {
+            if (window.innerWidth < 768) {
+                imagesPerPage = 2; // 2 images per page on mobile
+            } else {
+                imagesPerPage = 6; // 6 images per page otherwise
+            }
+        }
+
+        // Function to show the current page of slides
+        function showSlides() {
+            var totalSlides = slides.length;
+            slides.forEach(function(slide, index) {
+                if (index >= currentIndex * imagesPerPage && index < (currentIndex + 1) * imagesPerPage) {
+                    slide.style.display = "flex";
+                } else {
+                    slide.style.display = "none";
+                }
             });
-            slides[index].style.display = "flex"; // Show the current slide
         }
 
+        // Function to go to the next page of slides
         function nextSlide() {
-            currentIndex = (currentIndex + 1) % slides.length;
-            showSlide(currentIndex);
+            updateImagesPerPage();
+            var totalSlides = slides.length;
+            currentIndex = (currentIndex + 1) % Math.ceil(totalSlides / imagesPerPage);
+            showSlides();
         }
 
-        showSlide(currentIndex);
+        // Show the initial set of slides
+        showSlides();
+
+        // Set up an interval to automatically switch slides
         setInterval(nextSlide, 3000); // Change slide every 3 seconds
+
+        // Add event listener for load more button
+        var loadMoreButton = carousel.querySelector(".load-more-button");
+        if (loadMoreButton) {
+            loadMoreButton.addEventListener("click", function() {
+                currentIndex++;
+                showSlides();
+            });
+        }
+
+        // Handle window resize to adjust images per page
+        window.addEventListener('resize', function() {
+            updateImagesPerPage();
+            showSlides();
+        });
     });
 });

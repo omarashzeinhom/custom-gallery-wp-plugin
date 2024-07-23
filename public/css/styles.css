@@ -59,26 +59,22 @@
 
 /* Multi Carousel */
 .mg-gallery.multi-carousel {
-    align-items: center;
-    justify-content: center;
-    text-align: center;
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
     overflow: hidden;
     position: relative;
     width: 100%;
     max-width: 800px; /* Adjusted max-width for consistency */
     margin: 0 auto;
+    gap: 20px; /* Space between images */
+    align-items: center;
+    justify-content: center;
 }
 
 .mg-gallery.multi-carousel .mg-multi-carousel-slide {
+    flex: 0 0 calc(100% / 6); /* Adjust width based on the number of images per page */
+    max-width: 250px;
+    max-height: 250px;
     text-align: center;
-    width: 100%;
-    max-width: 250px; /* Adjusted max-width for consistency */
-    max-height: 250px; /* Adjusted max-height for consistency */
-    display: block;
-    flex-shrink: 0;
 }
 
 .mg-gallery.multi-carousel .mg-multi-carousel-slide img {
@@ -97,18 +93,12 @@
     box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem black;
 }
 
-.mg-gallery.multi-carousel .mg-multi-carousel-slide p {
-    margin: 5px 0;
+@media (max-width: 768px) {
+    .mg-gallery.multi-carousel .mg-multi-carousel-slide {
+        flex: 0 0 calc(100% / 2); /* 2 images per page on mobile */
+    }
 }
 
-.mg-gallery.multi-carousel .mg-multi-carousel-slide a {
-    color: #0073aa;
-    text-decoration: none;
-}
-
-.mg-gallery.multi-carousel .mg-multi-carousel-slide a:hover {
-    text-decoration: underline;
-}
 
 /* Grid Layout */
 .grid-layout {
@@ -128,7 +118,6 @@
 .grid-layout .grid-item {
     padding: 10px;
     opacity: 0.9;
-
 }
 
 .grid-layout .grid-item img {
