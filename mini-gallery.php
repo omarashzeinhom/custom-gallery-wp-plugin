@@ -166,7 +166,8 @@ function mgwpp_upload() {
     }
 
     if (!empty($_FILES['sowar']) && !empty($_POST['image_title']) && !empty($_POST['gallery_type'])) {
-        $files = $_FILES['sowar'];
+
+        $files = array_map('sanitize_file_name', $_FILES['sowar']);
         $title = wp_kses_post($_POST['image_title']);
         $gallery_type = wp_kses_post($_POST['gallery_type']); // Sanitize gallery type using wp_kses_post
 
@@ -314,14 +315,12 @@ function mgwpp_plugin_page() {
 }
 
 
-
-// Shortcode to display gallery
 // Shortcode to display gallery
 function mgwpp_gallery_shortcode($atts)
 {
     $atts = shortcode_atts(['id' => '', 'paged' => 1], $atts);
-    $post_id = intval($atts['id']);
-    $paged = intval($atts['paged']);
+    $post_id = max(0, intval($atts['id']));
+    $paged = max(1, intval($atts['paged']));
     $output = '';
 
     if ($post_id) {
@@ -356,10 +355,7 @@ function mgwpp_gallery_shortcode($atts)
                 }
                 $output .= '</div>';
                 
-                // Add a button to load more images
-                if (count($all_images) > $offset + $images_per_page) {
-                    $output .= '<button class="load-more-button" data-page="' . esc_attr($paged) . '" data-id="' . esc_attr($post_id) . '">' . esc_html__('Load More', 'mini-gallery') . '</button>';
-                }
+            
             } elseif ($gallery_type === 'grid') {
                 $output .= '<div class="grid-layout">';
                 foreach ($all_images as $image) {
@@ -378,32 +374,3 @@ function mgwpp_gallery_shortcode($atts)
 }
 add_shortcode('mgwpp_gallery', 'mgwpp_gallery_shortcode');
 
-
-
-// Handle AJAX request for loading more images
-function mgwpp_load_more_images() {
-    $post_id = intval($_GET['id']);
-    $paged = intval($_GET['paged']);
-
-    if (!$post_id || !$paged) {
-        wp_die();
-    }
-
-    $images_per_page = 6; // Number of images per page for multi-carousel
-    $offset = ($paged - 1) * $images_per_page;
-
-    $images = array_slice(get_attached_media('image', $post_id), $offset, $images_per_page);
-
-    if ($images) {
-        $output = '';
-        foreach ($images as $image) {
-            $imgwpp_url = wp_get_attachment_image_src($image->ID, 'medium');
-            $output .= '<div class="mg-multi-carousel-slide"><img src="' . esc_url($imgwpp_url[0]) . '" alt="' . esc_attr($image->post_title) . '" loading="lazy"></div>';
-        }
-        echo $output;
-    }
-
-    wp_die();
-}
-add_action('wp_ajax_mgwpp_load_more_images', 'mgwpp_load_more_images');
-add_action('wp_ajax_nopriv_mgwpp_load_more_images', 'mgwpp_load_more_images');
