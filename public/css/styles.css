@@ -111,6 +111,7 @@
 }
 
 /* Grid Layout */
+/* Grid Layout */
 .mg-gallery.grid-layout {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjusted grid column size */
@@ -120,6 +121,10 @@
     text-align: center;
     margin: 20px auto;
     max-width: 100%;
+}
+
+.mg-gallery.grid-layout .grid-item {
+    padding: 10px;
 }
 
 .mg-gallery.grid-layout .grid-item img {

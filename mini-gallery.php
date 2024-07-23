@@ -11,7 +11,7 @@
 if (!defined('ABSPATH')) exit;
 
 // Unique prefix for all functions and hooks
-function mg_register_post_type()
+function mgwpp_register_post_type()
 {
     $args = array(
         'public' => true,
@@ -44,56 +44,56 @@ function mg_register_post_type()
     );
     register_post_type('galleryimage', $args);
 }
-add_action('init', 'mg_register_post_type');
+add_action('init', 'mgwpp_register_post_type');
 
 // Enqueue front-end scripts and styles
-function mg_enqueue_assets()
+function mgwpp_enqueue_assets()
 {
     // Register scripts and styles
-    wp_register_script('mg-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array(), '1.0', true);
-    wp_register_style('mg-styles', plugin_dir_url(__FILE__) . 'public/css/styles.css', array(), '1.0');
+    wp_register_script('mgwpp-carousel', plugin_dir_url(__FILE__) . 'public/js/carousel.js', array(), '1.0', true);
+    wp_register_style('mgwpp-styles', plugin_dir_url(__FILE__) . 'public/css/styles.css', array(), '1.0');
 
     // Enqueue for front-end only
     if (!is_admin()) {
-        wp_enqueue_script('mg-carousel');
-        wp_enqueue_style('mg-styles');
+        wp_enqueue_script('mgwpp-carousel');
+        wp_enqueue_style('mgwpp-styles');
     }
 }
-add_action('wp_enqueue_scripts', 'mg_enqueue_assets');
+add_action('wp_enqueue_scripts', 'mgwpp_enqueue_assets');
 
 // Enqueue admin assets
-function mg_enqueue_admin_assets()
+function mgwpp_enqueue_admin_assets()
 {
     // Register scripts and styles
-    wp_register_script('mg-admin-carousel', plugin_dir_url(__FILE__) . 'public/admin/js/mg-scripts.js', array('jquery'), '1.0', true);
-    wp_register_style('mg-admin-styles', plugin_dir_url(__FILE__) . 'public/admin/css/mg-styles.css', array(), '1.0');
+    wp_register_script('mgwpp-admin-carousel', plugin_dir_url(__FILE__) . 'public/admin/js/mgwpp-scripts.js', array('jquery'), '1.0', true);
+    wp_register_style('mgwpp-admin-styles', plugin_dir_url(__FILE__) . 'public/admin/css/mgwpp-styles.css', array(), '1.0');
 
     // Enqueue for admin pages
-    wp_enqueue_script('mg-admin-carousel');
-    wp_enqueue_style('mg-admin-styles');
+    wp_enqueue_script('mgwpp-admin-carousel');
+    wp_enqueue_style('mgwpp-admin-styles');
 }
-add_action('admin_enqueue_scripts', 'mg_enqueue_admin_assets');
+add_action('admin_enqueue_scripts', 'mgwpp_enqueue_admin_assets');
 
 // Activation & Deactivation Hooks
-function mg_plugin_activate()
+function mgwpp_plugin_activate()
 {
-    mg_register_post_type();
-    mg_add_marketing_team_role();
-    mg_capabilities();
+    mgwpp_register_post_type();
+    mgwpp_add_marketing_team_role();
+    mgwpp_capabilities();
     flush_rewrite_rules();
 }
-register_activation_hook(__FILE__, 'mg_plugin_activate');
+register_activation_hook(__FILE__, 'mgwpp_plugin_activate');
 
-function mg_plugin_deactivate()
+function mgwpp_plugin_deactivate()
 {
     unregister_post_type('galleryimage');
     remove_role('marketing_team');
     flush_rewrite_rules();
 }
-register_deactivation_hook(__FILE__, 'mg_plugin_deactivate');
+register_deactivation_hook(__FILE__, 'mgwpp_plugin_deactivate');
 
 // Uninstall Hook
-function mg_plugin_uninstall()
+function mgwpp_plugin_uninstall()
 {
     $gallery_images = get_posts(array(
         'post_type' => 'galleryimage',
@@ -105,10 +105,10 @@ function mg_plugin_uninstall()
     }
     remove_role('marketing_team');
 }
-register_uninstall_hook(__FILE__, 'mg_plugin_uninstall');
+register_uninstall_hook(__FILE__, 'mgwpp_plugin_uninstall');
 
 // Roles
-function mg_add_marketing_team_role()
+function mgwpp_add_marketing_team_role()
 {
     if (get_role('marketing_team') === null) {
         add_role('marketing_team', 'Marketing Team', array(
@@ -132,10 +132,10 @@ function mg_add_marketing_team_role()
         ));
     }
 }
-add_action('init', 'mg_add_marketing_team_role');
+add_action('init', 'mgwpp_add_marketing_team_role');
 
 // Capabilities
-function mg_capabilities()
+function mgwpp_capabilities()
 {
     $roles = ['administrator', 'marketing_team'];
     foreach ($roles as $role_name) {
@@ -158,21 +158,21 @@ function mg_capabilities()
         }
     }
 }
-add_action('admin_init', 'mg_capabilities');
+add_action('admin_init', 'mgwpp_capabilities');
 
 // Admin Menu
-function mg_menu()
+function mgwpp_menu()
 {
     if (current_user_can('edit_galleryimages')) {
-        add_menu_page('Add New Gallery', 'Gallery', 'edit_galleryimages', 'mini-gallery', 'mg_plugin_page', 'dashicons-format-gallery', 6);
+        add_menu_page('Add New Gallery', 'Gallery', 'edit_galleryimages', 'mini-gallery', 'mgwpp_plugin_page', 'dashicons-format-gallery', 6);
     }
 }
-add_action('admin_menu', 'mg_menu');
+add_action('admin_menu', 'mgwpp_menu');
 
 // Handle File Uploads
-function mg_upload()
+function mgwpp_upload()
 {
-    if (!isset($_POST['mg_upload_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mg_upload_nonce'])), 'mg_upload_nonce')) {
+    if (!isset($_POST['mgwpp_upload_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mgwpp_upload_nonce'])), 'mgwpp_upload_nonce')) {
         wp_die('Security check');
     }
 
@@ -230,12 +230,12 @@ function mg_upload()
     wp_redirect(admin_url('admin.php?page=mini-gallery'));
     exit;
 }
-add_action('admin_post_mg_upload', 'mg_upload');
+add_action('admin_post_mgwpp_upload', 'mgwpp_upload');
 
 // Handle Gallery Deletion
-function mg_delete_gallery()
+function mgwpp_delete_gallery()
 {
-    if (!isset($_GET['gallery_id']) || !isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'mg_delete_gallery')) {
+    if (!isset($_GET['gallery_id']) || !isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'mgwpp_delete_gallery')) {
         wp_die('Security check failed');
     }
 
@@ -249,18 +249,18 @@ function mg_delete_gallery()
     wp_redirect(admin_url('admin.php?page=mini-gallery'));
     exit;
 }
-add_action('admin_post_mg_delete_gallery', 'mg_delete_gallery');
+add_action('admin_post_mgwpp_delete_gallery', 'mgwpp_delete_gallery');
 
 
-function mg_plugin_page()
+function mgwpp_plugin_page()
 {
     echo '<h1>' . esc_html__('Mini Gallery', 'mini-gallery') . '</h1>';
 
     // Form to upload new gallery images
     echo '<h2>' . esc_html__('Upload New Images', 'mini-gallery') . '</h2>';
     echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
-    echo '<input type="hidden" name="action" value="mg_upload">';
-    echo '<input type="hidden" name="mg_upload_nonce" value="' . esc_attr(wp_create_nonce('mg_upload_nonce')) . '">';
+    echo '<input type="hidden" name="action" value="mgwpp_upload">';
+    echo '<input type="hidden" name="mgwpp_upload_nonce" value="' . esc_attr(wp_create_nonce('mgwpp_upload_nonce')) . '">';
 
     echo '<label for="gallery_images">' . esc_html__('Select Images:', 'mini-gallery') . '</label>';
     echo '<input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" required multiple>';
@@ -296,13 +296,13 @@ function mg_plugin_page()
             echo '<p>' . esc_html__('Gallery Type: ', 'mini-gallery') . esc_html(ucfirst($gallery_type)) . '</p>';
 
             // Display the carousel preview using the shortcode
-            echo do_shortcode('[mg_gallery id="' . esc_attr($gallery->ID) . '"]');
+            echo do_shortcode('[mgwpp_gallery id="' . esc_attr($gallery->ID) . '"]');
             echo '<hr>';
             // Display the shortcode dynamically with the post ID
             echo '<p>' . esc_html__('Shortcode to display this gallery:', 'mini-gallery') . '</p>';
-            echo '<pre>' . esc_html('[mg_gallery id="' . esc_attr($gallery->ID) . '"]') . '</pre>';
+            echo '<pre>' . esc_html('[mgwpp_gallery id="' . esc_attr($gallery->ID) . '"]') . '</pre>';
             // Add delete link
-            $delete_url = wp_nonce_url(admin_url('admin-post.php?action=mg_delete_gallery&gallery_id=' . esc_attr($gallery->ID)), 'mg_delete_gallery');
+            $delete_url = wp_nonce_url(admin_url('admin-post.php?action=mgwpp_delete_gallery&gallery_id=' . esc_attr($gallery->ID)), 'mgwpp_delete_gallery');
             echo '<p><a href="' . esc_url($delete_url) . '" class="button button-secondary">' . esc_html__('Delete Gallery', 'mini-gallery') . '</a></p>';
             echo '</div>';
             echo '<hr>';
@@ -314,7 +314,7 @@ function mg_plugin_page()
 
 
 // Shortcode to display gallery
-function mg_gallery_shortcode($atts)
+function mgwpp_gallery_shortcode($atts)
 {
     $atts = shortcode_atts(['id' => ''], $atts);
     $post_id = intval($atts['id']);
@@ -330,24 +330,24 @@ function mg_gallery_shortcode($atts)
         $images = get_attached_media('image', $post_id);
         if ($images) {
             if ($gallery_type === 'single_carousel') {
-                $output .= '<div id="mg-carousel" class="mg-gallery-single-carousel">';
+                $output .= '<div id="mgwpp-carousel" class="mgwpp-gallery-single-carousel">';
                 foreach ($images as $image) {
-                    $img_url = wp_get_attachment_image_src($image->ID, 'medium');
-                    $output .= '<div class="carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" loading="lazy"></div>';
+                    $imgwpp_url = wp_get_attachment_image_src($image->ID, 'medium');
+                    $output .= '<div class="carousel-slide"><imgwpp src="' . esc_url($imgwpp_url[0]) . '" alt="' . esc_attr($image->post_title) . '" loading="lazy"></div>';
                 }
                 $output .= '</div>';
             } elseif ($gallery_type === 'multi_carousel') {
-                $output .= '<div id="mg-multi-carousel" class="mg-gallery multi-carousel">';
+                $output .= '<div id="mgwpp-multi-carousel" class="mgwpp-gallery multi-carousel">';
                 foreach ($images as $image) {
-                    $img_url = wp_get_attachment_image_src($image->ID, 'medium');
-                    $output .= '<div class="mg-multi-carousel-slide"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" loading="lazy"></div>';
+                    $imgwpp_url = wp_get_attachment_image_src($image->ID, 'medium');
+                    $output .= '<div class="mgwpp-multi-carousel-slide"><imgwpp src="' . esc_url($imgwpp_url[0]) . '" alt="' . esc_attr($image->post_title) . '" loading="lazy"></div>';
                 }
                 $output .= '</div>';
             } elseif ($gallery_type === 'grid') {
                 $output .= '<div class="grid-layout">';
                 foreach ($images as $image) {
-                    $img_url = wp_get_attachment_image_src($image->ID, 'medium');
-                    $output .= '<div class="grid-item"><img src="' . esc_url($img_url[0]) . '" alt="' . esc_attr($image->post_title) . '" loading="lazy"></div>';
+                    $imgwpp_url = wp_get_attachment_image_src($image->ID, 'medium');
+                    $output .= '<div class="grid-item"><imgwpp src="' . esc_url($imgwpp_url[0]) . '" alt="' . esc_attr($image->post_title) . '" loading="lazy"></div>';
                 }
                 $output .= '</div>';
             }
@@ -359,4 +359,4 @@ function mg_gallery_shortcode($atts)
     }
     return $output;
 }
-add_shortcode('mg_gallery', 'mg_gallery_shortcode');
+add_shortcode('mgwpp_gallery', 'mgwpp_gallery_shortcode');
