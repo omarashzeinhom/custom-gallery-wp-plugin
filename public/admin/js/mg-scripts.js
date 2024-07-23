@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Carousel for Multi Gallery
+// Carousel for Multi Gallery
 document.addEventListener("DOMContentLoaded", function() {
     var multiCarousels = document.querySelectorAll(".mg-gallery.multi-carousel");
 
@@ -33,9 +34,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         function showSlide(index) {
             slides.forEach(function(slide) {
-                slide.style.display = "flex";
+                slide.style.display = "none"; // Hide all slides
             });
-            slides[index].style.display = "flex";
+            slides[index].style.display = "flex"; // Show the current slide
         }
 
         function nextSlide() {

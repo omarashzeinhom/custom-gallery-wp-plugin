@@ -127,6 +127,7 @@
 
 .grid-layout .grid-item {
     padding: 10px;
+    opacity: 0.9;
 }
 
 .grid-layout .grid-item img {
@@ -141,7 +142,7 @@
     object-fit: cover;
 }
 
-.mg-gallery.grid-layout .grid-item img:hover {
+.grid-layout .grid-item img:hover {
     opacity: 1;
     box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem black;
 }
