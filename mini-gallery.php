@@ -160,13 +160,13 @@ function mgwpp_menu() {
 add_action('admin_menu', 'mgwpp_menu');
 
 // Handle File Uploads
+// Handle File Uploads
 function mgwpp_upload() {
     if (!isset($_POST['mgwpp_upload_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mgwpp_upload_nonce'])), 'mgwpp_upload_nonce')) {
-        wp_die('Security check');
+        wp_die('Security check failed');
     }
 
     if (!empty($_FILES['sowar']) && !empty($_POST['image_title']) && !empty($_POST['gallery_type'])) {
-
         $files = array_map('sanitize_file_name', $_FILES['sowar']);
         $title = wp_kses_post($_POST['image_title']);
         $gallery_type = wp_kses_post($_POST['gallery_type']); // Sanitize gallery type using wp_kses_post
@@ -225,7 +225,7 @@ add_action('admin_post_mgwpp_upload', 'mgwpp_upload');
 
 // Handle Gallery Deletion
 function mgwpp_delete_gallery() {
-    if (!isset($_GET['gallery_id']) || !isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'mgwpp_delete_gallery')) {
+    if (!isset($_GET['gallery_id']) || !isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'mgwpp_delete_gallery')) {
         wp_die('Security check failed');
     }
 
