@@ -160,16 +160,14 @@ function mgwpp_menu() {
 add_action('admin_menu', 'mgwpp_menu');
 
 // Handle File Uploads
-// Handle File Uploads
 function mgwpp_upload() {
     if (!isset($_POST['mgwpp_upload_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mgwpp_upload_nonce'])), 'mgwpp_upload_nonce')) {
         wp_die('Security check failed');
     }
 
     if (!empty($_FILES['sowar']) && !empty($_POST['image_title']) && !empty($_POST['gallery_type'])) {
-        $files = array_map('sanitize_file_name', $_FILES['sowar']);
-        $title = wp_kses_post($_POST['image_title']);
-        $gallery_type = wp_kses_post($_POST['gallery_type']); // Sanitize gallery type using wp_kses_post
+        $title = sanitize_text_field($_POST['image_title']);
+        $gallery_type = sanitize_text_field($_POST['gallery_type']); // Sanitize gallery type using sanitize_text_field
 
         // Create a new post for the gallery
         $post_id = wp_insert_post(array(
@@ -182,14 +180,14 @@ function mgwpp_upload() {
             // Save the gallery type as post meta
             update_post_meta($post_id, 'gallery_type', $gallery_type);
 
-            foreach ($files['name'] as $key => $value) {
-                if ($files['name'][$key]) {
+            foreach ($_FILES['sowar']['name'] as $key => $value) {
+                if ($_FILES['sowar']['name'][$key]) {
                     $file = array(
-                        'name' => sanitize_file_name($files['name'][$key]), // Sanitize file name
-                        'type' => $files['type'][$key],
-                        'tmp_name' => $files['tmp_name'][$key],
-                        'error' => $files['error'][$key],
-                        'size' => $files['size'][$key]
+                        'name' => sanitize_file_name($_FILES['sowar']['name'][$key]), // Sanitize file name
+                        'type' => $_FILES['sowar']['type'][$key],
+                        'tmp_name' => $_FILES['sowar']['tmp_name'][$key],
+                        'error' => $_FILES['sowar']['error'][$key],
+                        'size' => $_FILES['sowar']['size'][$key]
                     );
 
                     $file_type = wp_check_filetype($file['name']);
@@ -221,6 +219,7 @@ function mgwpp_upload() {
     exit;
 }
 add_action('admin_post_mgwpp_upload', 'mgwpp_upload');
+
 
 
 // Handle Gallery Deletion
